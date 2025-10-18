@@ -28,6 +28,8 @@
   * Key pair: `kp-wp-lab`
   * Tag: `Project=wp-lab`
 
+* **Costi**: [Calcolatore AWS](https://calculator.aws/#/estimate?id=76711d4132a435629a8e7edd3ddd6ae87125a29b)
+
 ---
 
 ## 1) Architettura (Single-AZ)
