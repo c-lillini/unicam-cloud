@@ -7,7 +7,8 @@ La cartella `Esercitazioni` 📂 raccoglie le esercitazioni viste a lezione, sud
 ## Struttura del repository
 
 - 📁 `Esercitazioni/` – esercitazioni del corso organizzate per capitolo, con materiali e soluzioni a supporto delle lezioni.
+  - 🏗️ `02 - Infrastruttura IaaS/` – laboratori dedicati alla costruzione di ambienti su Infrastructure as a Service.
+    - 🖥️ `AWS EC2/` – guida passo-passo per distribuire WordPress e MariaDB su due istanze EC2 (app pubblica + DB privato) in configurazione Single-AZ.
   - 📘 `03 - Servizi PaaS/` – panoramica sui servizi Platform as a Service.
     - 🚀 `AWSBeanstalk/` – esempio di deployment su AWS Elastic Beanstalk.
     - 🌐 `Netlify/` – esercitazione sul deploy di un sito statico con Netlify.
-
