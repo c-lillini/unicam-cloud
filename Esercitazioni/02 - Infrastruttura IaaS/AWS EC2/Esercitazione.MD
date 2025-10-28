@@ -217,6 +217,9 @@
   
   ```bash
   ssh -i kp-wp-lab.pem ec2-user@<Public-IP-ec2-wp-app>
+  #Modificare i permessi della chiave
+  chmod 600 /tmp/kp-wp-lab.pem
+  #Collegarsi alla macchina DB
   ssh -i /tmp/kp-wp-lab.pem ec2-user@<Private-IP-ec2-wp-db>
   ```
 
