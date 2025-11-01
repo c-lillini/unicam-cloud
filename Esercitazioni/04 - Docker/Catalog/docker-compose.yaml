@@ -1,0 +1,33 @@
+name: catalog-app
+services:
+  backend:
+    container_name: catalog-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      MONGODB_URI: mongodb://mongo:27017
+      MONGODB_DB: ${MONGODB_DB}
+      MONGODB_COLLECTION: ${MONGODB_COLLECTION}
+      MONGODB_USERNAME: ${MONGODB_USERNAME}
+      MONGODB_PASSWORD: ${MONGODB_PASSWORD}
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    depends_on:
+      - mongo
+
+  mongo:
+    container_name: catalog-mongo
+    image: mongo:7
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGODB_DB}
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:

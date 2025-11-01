@@ -1,0 +1,16 @@
+meta {
+  name: GetItems
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{protocol}}://{{url}}:{{port}}/items
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,19 @@
+{
+  "name": "catalog-backend",
+  "version": "1.0.0",
+  "description": "Simple Express service exposing MongoDB catalog items",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "echo \"No tests specified\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "mongodb": "^6.20.0"
+  }
+}
