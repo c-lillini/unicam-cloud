@@ -12,3 +12,6 @@ La cartella `Esercitazioni` 📂 raccoglie le esercitazioni viste a lezione, sud
   - 📘 `03 - Servizi PaaS/` – panoramica sui servizi Platform as a Service.
     - 🚀 `AWSBeanstalk/` – esempio di deployment su AWS Elastic Beanstalk.
     - 🌐 `Netlify/` – esercitazione sul deploy di un sito statico con Netlify.
+  - 🐳 `04 - Docker/` – laboratori dedicati alla containerizzazione di servizi tramite Docker e Docker Compose.
+    - 🧾 `Catalog/` – servizio Catalog Node.js/Express con MongoDB, completo di configurazione Docker Compose per API e database.
+    - 📰 `Wordpress/` – stack WordPress + MariaDB containerizzato con volumi persistenti e rete isolata per test locali rapidi.
