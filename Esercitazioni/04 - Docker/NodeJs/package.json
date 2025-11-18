@@ -1,0 +1,12 @@
+{
+  "name": "machine-info-service",
+  "version": "1.0.0",
+  "description": "Simple Express service that exposes machine information",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
