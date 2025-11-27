@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Esercitazione Custom Image</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; text-align: center; padding: 50px; background: #e0f7fa; color: #333; }
+        .card { background: #fff; padding: 40px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-width: 600px; margin: 0 auto; }
+        h1 { color: #006064; }
+        .tag { background: #00bcd4; color: white; padding: 5px 10px; border-radius: 5px; font-weight: bold; }
+        .warning { color: #d32f2f; font-size: 0.9em; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🐳 Ciao dalla tua Custom Image Nginx!</h1>
+        <p>Se leggi questo testo, significa che il container è stato costruito correttamente con <code>docker build</code>.</p>
+        <hr>
+        <p><strong>Stato Architettura:</strong></p>
+        <p>Il file <span class="tag">index.html</span> fa parte del filesystem del container.</p>
+        
+        <div class="warning">
+            Nota: Per aggiornare questa pagina, devi ricostruire l'immagine Docker!
+        </div>
+    </div>
+</body>
+</html>
