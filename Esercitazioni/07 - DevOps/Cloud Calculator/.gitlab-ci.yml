@@ -1,0 +1,86 @@
+# Includiamo i template ufficiali di GitLab per la sicurezza
+include:
+  - template: Security/SAST.gitlab-ci.yml
+  - template: Security/Secret-Detection.gitlab-ci.yml
+
+# Definiamo le fasi della nostra "catena di montaggio"
+stages:
+  - build
+  - test
+  - package
+  - deploy
+
+variables:
+  # Nome del container che girerà sulla macchina host
+  CONTAINER_NAME: "cloud-calculator-prod" 
+  # Porta esposta sull'Host
+  HOST_PORT: "8080"
+
+# --- JOB 1: COMPILAZIONE ---
+build_job:
+  stage: build
+  image: mcr.microsoft.com/dotnet/sdk:9.0
+  tags:
+    - docker-runner
+  script:
+    - echo "Inizio compilazione..."
+    - dotnet restore CloudCalculator.sln
+    - dotnet build CloudCalculator.sln --configuration Release
+  artifacts:
+    paths:
+      - CloudCalculator.Api/bin/Release/
+      - CloudCalculator.Tests/bin/Release/
+
+# --- JOB 2: TEST AUTOMATICI ---
+test_job:
+  stage: test
+  image: mcr.microsoft.com/dotnet/sdk:9.0
+  tags:
+    - docker-runner
+  dependencies:
+    - build_job  # Usa gli artefatti del job precedente
+  script:
+    - echo "Esecuzione Test Unitari..."
+    - dotnet test CloudCalculator.sln --configuration Release
+  # Se i test falliscono, la pipeline si ferma QUI. 
+  # Non verrà mai creato il container "rotto".
+
+# --- JOB 3: SAST & SECRET DETECTION ---
+# Non vedete questi job definiti esplicitamente qui sotto
+# perché vengono iniettati automaticamente dai template "include" all'inizio del file.
+# Eseguiranno nello stage 'test' in parallelo ai unit test.
+
+# --- JOB 4: PACKAGE (Socket Binding) ---
+docker_build:
+  stage: package
+  tags:
+    - shell-runner
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA CloudCalculator.Api
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+  only:
+    - main
+
+# --- JOB 4: DEPLOY (Manuale) ---
+deploy_production:
+  stage: deploy
+  tags:
+    - shell-runner
+  # Environment: utile per avere il pulsante "Open Live Environment" su GitLab
+  environment:
+    name: production
+    url: https://cicd.lillini.tech:$HOST_PORT 
+  script:
+    - echo "Deploy in corso..."
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker stop $CONTAINER_NAME || true
+    - docker rm $CONTAINER_NAME || true
+    - docker run -d --name $CONTAINER_NAME --restart unless-stopped -p $HOST_PORT:8080 $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - echo "Deploy completato! L'applicazione è raggiungibile sulla porta $HOST_PORT."
+  
+  when: manual
+  only:
+    - main

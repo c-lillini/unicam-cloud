@@ -1,0 +1,17 @@
+# build outputs
+**/bin/
+**/obj/
+
+# user settings / tooling
+.vs/
+.vscode/
+*.user
+*.suo
+
+# version control
+.git/
+
+# other noise
+Dockerfile.*
+*.log
+node_modules/
