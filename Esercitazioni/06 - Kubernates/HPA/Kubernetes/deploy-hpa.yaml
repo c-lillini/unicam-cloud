@@ -13,7 +13,7 @@ spec:
         app: demo-autoscale
     spec:
       containers:
-        - name: php-apache
+        - name: hpa-example
           image: registry.k8s.io/hpa-example
           ports:
             - containerPort: 80
@@ -45,7 +45,7 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: demo-autoscale
-  minReplicas: 1               
+  minReplicas: 4               
   maxReplicas: 10              
   metrics:
     - type: Resource
