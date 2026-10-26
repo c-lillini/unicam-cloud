@@ -1,0 +1,108 @@
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+th {
+  text-align: left;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  padding: 0 10px 8px;
+  white-space: nowrap;
+}
+
+td {
+  padding: 8px 10px;
+  border-top: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+td.active {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.ip {
+  margin-left: 6px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+.dim {
+  opacity: 0.4;
+}
+
+tr.offline td:not(:nth-child(2)) {
+  opacity: 0.45;
+}
+
+.weight {
+  width: 56px;
+}
+
+.latency {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.latency input {
+  width: 120px;
+  accent-color: var(--accent);
+}
+
+.latency span {
+  font-variant-numeric: tabular-nums;
+  min-width: 64px;
+}
+
+input[type='checkbox'] {
+  accent-color: var(--accent);
+  width: 16px;
+  height: 16px;
+}
+
+.dist {
+  width: 32%;
+  min-width: 200px;
+}
+
+.dist-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bar {
+  flex: 1;
+  display: flex;
+  height: 14px;
+  border-radius: 7px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+
+.bar span {
+  height: 100%;
+  transition: width 0.2s;
+}
+
+.share {
+  min-width: 40px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}

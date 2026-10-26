@@ -1,0 +1,81 @@
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Server</th>
+        <th>Online</th>
+        <th [class.dim]="!usesWeight()" title="Usato da Weighted Round Robin">Peso</th>
+        <th>Elaborazione base</th>
+        <th class="num">Attive</th>
+        <th class="num">Assegnate</th>
+        <th class="num">Completate</th>
+        <th class="num">T. risposta medio</th>
+        <th class="dist">Distribuzione (colori = client)</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (s of sim.servers(); track s.id) {
+        <tr [class.offline]="!s.online">
+          <td>
+            <b>{{ s.name }}</b> <span class="ip">{{ s.ip }}</span>
+          </td>
+          <td>
+            <input
+              type="checkbox"
+              [checked]="s.online"
+              (change)="sim.setOnline(s.id, checkedFrom($event))"
+              [attr.aria-label]="'Server ' + s.name + ' online'"
+            />
+          </td>
+          <td [class.dim]="!usesWeight()">
+            <input
+              class="weight"
+              type="number"
+              min="0"
+              max="10"
+              [value]="s.weight"
+              (change)="sim.setWeight(s.id, numberFrom($event))"
+              [attr.aria-label]="'Peso di ' + s.name"
+            />
+          </td>
+          <td>
+            <div class="latency">
+              <input
+                type="range"
+                min="100"
+                max="2500"
+                step="50"
+                [value]="s.baseLatency"
+                (input)="sim.setLatency(s.id, numberFrom($event))"
+                [attr.aria-label]="'Tempo di elaborazione di ' + s.name"
+              />
+              <span>{{ s.baseLatency }} ms</span>
+            </div>
+          </td>
+          <td class="num active">{{ s.active }}</td>
+          <td class="num">{{ s.assigned }}</td>
+          <td class="num">{{ s.handled }}</td>
+          <td class="num">
+            {{ s.avgResponseTime === null ? '—' : (s.avgResponseTime | number: '1.0-0') + ' ms' }}
+          </td>
+          <td class="dist">
+            <div class="dist-cell">
+              <div class="bar">
+                @for (count of s.perClient; track $index) {
+                  @if (count > 0) {
+                    <span
+                      [style.width.%]="(count / totalAssigned()) * 100"
+                      [style.background]="clientPool[$index].color"
+                      [title]="'Client ' + clientPool[$index].name + ': ' + count"
+                    ></span>
+                  }
+                }
+              </div>
+              <span class="share">{{ s.share | percent: '1.0-0' }}</span>
+            </div>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,142 @@
+<svg
+  class="topology"
+  [attr.viewBox]="viewBox"
+  role="img"
+  aria-label="Simulazione del load balancer"
+>
+  <defs>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- collegamenti -->
+  @for (c of clientNodes(); track c.index) {
+    <line
+      class="link"
+      [attr.x1]="c.x + clientR"
+      [attr.y1]="c.y"
+      [attr.x2]="lbIn.x"
+      [attr.y2]="lbIn.y"
+    />
+  }
+  @for (s of serverNodes(); track s.id) {
+    <line
+      class="link"
+      [class.offline]="!s.online"
+      [attr.x1]="lbOut.x"
+      [attr.y1]="lbOut.y"
+      [attr.x2]="s.x - serverW / 2"
+      [attr.y2]="s.y"
+    />
+    @if (s.highlight > 0) {
+      <line
+        class="link hot"
+        [style.opacity]="s.highlight"
+        [attr.x1]="lbOut.x"
+        [attr.y1]="lbOut.y"
+        [attr.x2]="s.x - serverW / 2"
+        [attr.y2]="s.y"
+      />
+    }
+  }
+
+  <!-- client -->
+  @for (c of clientNodes(); track c.index) {
+    <g
+      class="client"
+      [attr.transform]="'translate(' + c.x + ',' + c.y + ')'"
+      (click)="sim.sendRequest(c.index)"
+      role="button"
+      [attr.aria-label]="'Invia richiesta dal client ' + c.name"
+    >
+      <title>Clic: invia una richiesta da {{ c.ip }}</title>
+      <circle [attr.r]="clientR" [attr.fill]="c.color" />
+      <text class="client-name" text-anchor="middle" dy="0.35em">{{ c.name }}</text>
+      <text class="client-ip" [attr.x]="-clientR - 8" text-anchor="end" dy="0.35em">
+        {{ c.ip }}
+      </text>
+      @if (c.lastServer) {
+        <text class="client-last" [attr.x]="clientR + 8" dy="-0.8em">→ {{ c.lastServer }}</text>
+      }
+    </g>
+  }
+
+  <!-- load balancer -->
+  <g class="lb" [attr.transform]="'translate(' + (lb.x - lb.w / 2) + ',' + (lb.y - lb.h / 2) + ')'">
+    <rect [attr.width]="lb.w" [attr.height]="lb.h" rx="16" />
+    <text class="lb-title" [attr.x]="lb.w / 2" y="30" text-anchor="middle">LOAD BALANCER</text>
+    <text class="lb-algo" [attr.x]="lb.w / 2" y="56" text-anchor="middle">
+      {{ algorithm().name }}
+    </text>
+    <text class="lb-last" [attr.x]="lb.w / 2" y="88" text-anchor="middle">
+      ultima scelta: {{ lastPick() }}
+    </text>
+  </g>
+
+  <!-- server -->
+  @for (s of serverNodes(); track s.id) {
+    <g
+      class="server"
+      [class.offline]="!s.online"
+      [attr.transform]="'translate(' + (s.x - serverW / 2) + ',' + (s.y - serverH / 2) + ')'"
+    >
+      @if (s.highlight > 0) {
+        <rect
+          class="server-glow"
+          [attr.width]="serverW"
+          [attr.height]="serverH"
+          rx="12"
+          [style.opacity]="s.highlight"
+          filter="url(#glow)"
+        />
+      }
+      <rect class="server-box" [attr.width]="serverW" [attr.height]="serverH" rx="12" />
+      <text class="server-name" x="12" y="22">{{ s.name }}</text>
+      <text class="server-ip" x="44" y="22">{{ s.ip }}</text>
+      @if (s.online) {
+        <text class="server-meta" x="12" y="42">{{ serverMeta(s) }}</text>
+      } @else {
+        <text class="server-offline" x="12" y="42">OFFLINE</text>
+      }
+      <text class="server-active" [attr.x]="serverW - 10" y="22" text-anchor="end">
+        {{ s.active }}
+      </text>
+      @for (color of s.dots; track $index) {
+        <circle [attr.cx]="16 + $index * 12" [attr.cy]="58" r="4.5" [attr.fill]="color" />
+      }
+      @if (s.overflow > 0) {
+        <text class="server-overflow" [attr.x]="16 + s.dots.length * 12" y="62">
+          +{{ s.overflow }}
+        </text>
+      }
+    </g>
+  }
+
+  <!-- pacchetti in volo -->
+  @for (p of sim.packets(); track p.id) {
+    @if (p.rejected) {
+      <text
+        class="rejected"
+        [attr.x]="p.x"
+        [attr.y]="p.y - 24"
+        [style.opacity]="p.opacity"
+        text-anchor="middle"
+      >
+        503
+      </text>
+    } @else {
+      <circle class="packet" [attr.cx]="p.x" [attr.cy]="p.y" r="7" [attr.fill]="p.color" />
+    }
+  }
+</svg>
+
+<div class="legend">
+  <span><i class="dot"></i> richiesta</span>
+  <span><i class="dot small"></i> connessione attiva sul server</span>
+  <span class="hint">Clic su un client per inviare una richiesta da quell'IP</span>
+</div>

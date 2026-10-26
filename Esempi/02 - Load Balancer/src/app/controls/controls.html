@@ -1,0 +1,85 @@
+<div class="row">
+  <button class="primary" type="button" (click)="sim.togglePause()">
+    {{ sim.paused() ? '▶ Riprendi' : '⏸ Pausa' }}
+  </button>
+  <button type="button" (click)="sim.sendRequest()">+1 richiesta</button>
+  <button type="button" (click)="sim.burst()">Burst ×10</button>
+</div>
+
+<label class="toggle">
+  <input
+    type="checkbox"
+    [checked]="sim.autoTraffic()"
+    (change)="sim.setAutoTraffic(checkedFrom($event))"
+  />
+  Traffico automatico
+</label>
+
+<label class="slider" [class.disabled]="!sim.autoTraffic()">
+  <span
+    >Richieste al secondo <b>{{ sim.rate() }}</b></span
+  >
+  <input
+    type="range"
+    min="0.5"
+    max="10"
+    step="0.5"
+    [value]="sim.rate()"
+    (input)="sim.setRate(numberFrom($event))"
+  />
+</label>
+
+<label class="slider">
+  <span
+    >Velocità simulazione <b>{{ sim.speed() }}×</b></span
+  >
+  <input
+    type="range"
+    min="0.25"
+    max="3"
+    step="0.25"
+    [value]="sim.speed()"
+    (input)="sim.setSpeed(numberFrom($event))"
+  />
+</label>
+
+<label class="slider">
+  <span
+    >Client <b>{{ sim.clientCount() }}</b></span
+  >
+  <input
+    type="range"
+    [min]="minClients"
+    [max]="maxClients"
+    step="1"
+    [value]="sim.clientCount()"
+    (input)="sim.setClientCount(numberFrom($event))"
+  />
+</label>
+
+<div class="row servers">
+  <span
+    >Server <b>{{ sim.servers().length }}</b></span
+  >
+  <button
+    type="button"
+    [disabled]="!canRemoveServer()"
+    (click)="sim.removeServer()"
+    aria-label="Rimuovi server"
+  >
+    −
+  </button>
+  <button
+    type="button"
+    [disabled]="!canAddServer()"
+    (click)="sim.addServer()"
+    aria-label="Aggiungi server"
+  >
+    +
+  </button>
+</div>
+
+<div class="row">
+  <button type="button" (click)="sim.resetStats()">Azzera statistiche</button>
+  <button type="button" (click)="sim.resetAll()">Reset completo</button>
+</div>

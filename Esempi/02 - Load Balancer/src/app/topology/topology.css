@@ -1,0 +1,177 @@
+:host {
+  display: block;
+}
+
+.topology {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-family: inherit;
+}
+
+.link {
+  stroke: var(--line);
+  stroke-width: 1.5;
+}
+
+.link.offline {
+  stroke-dasharray: 4 6;
+  opacity: 0.4;
+}
+
+.link.hot {
+  stroke: var(--accent);
+  stroke-width: 3;
+}
+
+.client {
+  cursor: pointer;
+}
+
+.client circle {
+  stroke: var(--bg);
+  stroke-width: 3;
+  transition: r 0.15s;
+}
+
+.client:hover circle {
+  stroke: var(--text);
+}
+
+.client-name {
+  font-size: 16px;
+  font-weight: 700;
+  fill: #111827;
+}
+
+.client-ip {
+  font-size: 12px;
+  fill: var(--muted);
+  font-family: var(--mono);
+}
+
+.client-last {
+  font-size: 12px;
+  fill: var(--text);
+  font-weight: 600;
+}
+
+.lb rect {
+  fill: var(--surface-2);
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
+.lb-title {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  fill: var(--muted);
+  font-weight: 600;
+}
+
+.lb-algo {
+  font-size: 15px;
+  font-weight: 700;
+  fill: var(--accent);
+}
+
+.lb-last {
+  font-size: 12px;
+  fill: var(--text);
+}
+
+.server-box {
+  fill: var(--surface-2);
+  stroke: var(--line-strong);
+  stroke-width: 1.5;
+}
+
+.server-glow {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 4;
+}
+
+.server-name {
+  font-size: 15px;
+  font-weight: 700;
+  fill: var(--text);
+}
+
+.server-ip,
+.server-meta {
+  font-size: 11px;
+  fill: var(--muted);
+  font-family: var(--mono);
+}
+
+.server-active {
+  font-size: 18px;
+  font-weight: 700;
+  fill: var(--accent);
+}
+
+.server-offline {
+  font-size: 12px;
+  font-weight: 700;
+  fill: var(--danger);
+  letter-spacing: 0.1em;
+}
+
+.server-overflow {
+  font-size: 11px;
+  fill: var(--muted);
+}
+
+.server.offline .server-box {
+  stroke-dasharray: 5 5;
+  opacity: 0.5;
+}
+
+.server.offline .server-name,
+.server.offline .server-ip {
+  opacity: 0.5;
+}
+
+.packet {
+  stroke: var(--bg);
+  stroke-width: 1.5;
+}
+
+.rejected {
+  fill: var(--danger);
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  padding: 10px 4px 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend .hint {
+  margin-left: auto;
+}
+
+.dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.dot.small {
+  width: 8px;
+  height: 8px;
+}

@@ -1,0 +1,90 @@
+<header>
+  <div>
+    <h1>Load Balancer Simulator</h1>
+    <p>Come un load balancer distribuisce le richieste dei client tra i server di backend</p>
+  </div>
+  <dl class="totals">
+    <div>
+      <dt>Inviate</dt>
+      <dd>{{ sim.totals().sent }}</dd>
+    </div>
+    <div>
+      <dt>Completate</dt>
+      <dd>{{ sim.totals().completed }}</dd>
+    </div>
+    <div>
+      <dt>In corso</dt>
+      <dd>{{ sim.totals().inFlight }}</dd>
+    </div>
+    <div>
+      <dt>Rifiutate</dt>
+      <dd [class.danger]="sim.totals().rejected > 0">{{ sim.totals().rejected }}</dd>
+    </div>
+    <div>
+      <dt>T. medio end-to-end</dt>
+      <dd>
+        @if (sim.totals().avgResponseTime; as avg) {
+          {{ avg | number: '1.0-0' }} ms
+        } @else {
+          —
+        }
+      </dd>
+    </div>
+  </dl>
+</header>
+
+<nav class="algorithms" aria-label="Algoritmo di bilanciamento">
+  @for (a of algorithms; track a.id) {
+    <button
+      type="button"
+      [class.selected]="a.id === sim.algorithm()"
+      [attr.aria-pressed]="a.id === sim.algorithm()"
+      (click)="sim.setAlgorithm(a.id)"
+    >
+      {{ a.name }}
+    </button>
+  }
+</nav>
+
+<main>
+  <div class="main-col">
+    <section class="card">
+      <app-topology />
+    </section>
+    <section class="card">
+      <h2>Server di backend</h2>
+      <app-server-stats />
+    </section>
+  </div>
+
+  <aside>
+    <section class="card info">
+      <h2>{{ info().name }}</h2>
+      <p>{{ info().summary }}</p>
+      <code class="rule">{{ info().rule }}</code>
+      <div class="pros-cons">
+        <ul class="pros">
+          @for (p of info().pros; track $index) {
+            <li>{{ p }}</li>
+          }
+        </ul>
+        <ul class="cons">
+          @for (c of info().cons; track $index) {
+            <li>{{ c }}</li>
+          }
+        </ul>
+      </div>
+      <p class="try"><b>Prova:</b> {{ info().tryThis }}</p>
+    </section>
+
+    <section class="card">
+      <h2>Simulazione</h2>
+      <app-controls />
+    </section>
+
+    <section class="card">
+      <h2>Decisioni del load balancer</h2>
+      <app-decision-log />
+    </section>
+  </aside>
+</main>

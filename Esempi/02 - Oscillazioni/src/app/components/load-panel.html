@@ -1,0 +1,97 @@
+<section class="card load">
+  <header class="card-head">
+    <h2>Carico in ingresso e ambiente</h2>
+    <div class="chips" role="group" aria-label="Scenari di carico">
+      @for (p of presets; track p.label) {
+        <button type="button" class="chip" [class.active]="activePreset() === p" [title]="p.hint" (click)="applyPreset(p)">
+          {{ p.label }}
+        </button>
+      }
+    </div>
+  </header>
+  @if (activePreset(); as p) {
+    <p class="hint">{{ p.hint }}</p>
+  }
+
+  <div class="load-grid">
+    <div class="config">
+      <fieldset>
+        <legend>Forma del carico</legend>
+        <label class="field">
+          <span>Andamento</span>
+          <select (change)="setScenario($event)">
+            @for (s of scenarios; track s.value) {
+              <option [value]="s.value" [selected]="s.value === load().scenario">{{ s.label }}</option>
+            }
+          </select>
+        </label>
+        <label class="field">
+          <span>Carico base</span>
+          <input type="range" min="0" max="600" step="5" [value]="load().base" (input)="setLoad('base', $event)" />
+          <output>{{ load().base }}% <small>≈ {{ load().base / 100 | number: '1.0-2' }} pod</small></output>
+        </label>
+        <label class="field" [class.disabled]="load().scenario === 'costante'">
+          <span>Ampiezza</span>
+          <input
+            type="range"
+            min="0"
+            max="400"
+            step="10"
+            [disabled]="load().scenario === 'costante'"
+            [value]="load().amplitude"
+            (input)="setLoad('amplitude', $event)"
+          />
+          <output>{{ load().amplitude }}%</output>
+        </label>
+        <label class="field" [class.disabled]="load().scenario === 'costante'">
+          <span>Periodo</span>
+          <input
+            type="range"
+            min="60"
+            max="900"
+            step="20"
+            [disabled]="load().scenario === 'costante'"
+            [value]="load().period"
+            (input)="setLoad('period', $event)"
+          />
+          <output>{{ load().period }} s</output>
+        </label>
+        <label class="field">
+          <span>Rumore (±)</span>
+          <input type="range" min="0" max="60" step="1" [value]="load().noise" (input)="setLoad('noise', $event)" />
+          <output>{{ load().noise }}%</output>
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Ambiente (comune ai due autoscaler)</legend>
+        <label class="field">
+          <span>Intervallo di valutazione</span>
+          <select (change)="setEnv('evalInterval', $event)">
+            @for (v of evalIntervals; track v) {
+              <option [value]="v" [selected]="v === env().evalInterval">ogni {{ v }} s</option>
+            }
+          </select>
+        </label>
+        <label class="field">
+          <span>Tempo di avvio di un pod</span>
+          <input type="range" min="0" max="180" step="5" [value]="env().startupDelay" (input)="setEnv('startupDelay', $event)" />
+          <output>{{ env().startupDelay }} s</output>
+        </label>
+        <p class="muted small">
+          Un pod appena creato non riceve traffico finché non è pronto: nel frattempo la metrica resta alta.
+        </p>
+      </fieldset>
+    </div>
+
+    <app-time-chart
+      label="Carico richiesto nel tempo"
+      unit="%"
+      [times]="times()"
+      [capacity]="sim.windowSize"
+      [yMax]="yMax()"
+      [height]="250"
+      [series]="series()"
+    />
+  </div>
+</section>

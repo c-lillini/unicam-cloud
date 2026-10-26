@@ -1,0 +1,75 @@
+<figure class="chart">
+  <svg [attr.viewBox]="'0 0 ' + W + ' ' + height()" role="img" [attr.aria-label]="label()">
+    @for (b of bands(); track b.label) {
+      <rect
+        [attr.x]="PAD.left"
+        [attr.y]="y(b.to)"
+        [attr.width]="W - PAD.left - PAD.right"
+        [attr.height]="y(b.from) - y(b.to)"
+        [style.fill]="b.color"
+      />
+    }
+
+    @for (v of yTicks(); track v) {
+      <line class="grid" [attr.x1]="PAD.left" [attr.x2]="W - PAD.right" [attr.y1]="y(v)" [attr.y2]="y(v)" />
+      <text class="axis" [attr.x]="PAD.left - 6" [attr.y]="y(v) + 4" text-anchor="end">
+        {{ v }}{{ unit() }}
+      </text>
+    }
+
+    @for (tick of xTicks(); track tick.t) {
+      <line class="grid" [attr.x1]="x(tick.i)" [attr.x2]="x(tick.i)" [attr.y1]="PAD.top" [attr.y2]="bottom()" />
+      <text class="axis" [attr.x]="x(tick.i)" [attr.y]="height() - 6" text-anchor="middle">
+        {{ tick.label }}
+      </text>
+    }
+
+    @for (l of lines(); track l.label) {
+      <line
+        class="threshold"
+        [attr.x1]="PAD.left"
+        [attr.x2]="W - PAD.right"
+        [attr.y1]="y(l.y)"
+        [attr.y2]="y(l.y)"
+        [style.stroke]="l.color"
+      />
+      <text class="threshold-label" [attr.x]="W - PAD.right - 4" [attr.y]="y(l.y) - 4" text-anchor="end" [style.fill]="l.color">
+        {{ l.label }}
+      </text>
+    }
+
+    @for (p of paths(); track p.label) {
+      <path
+        class="series"
+        [attr.d]="p.d"
+        [style.stroke]="p.color"
+        [style.stroke-width]="p.width ?? 2"
+        [style.stroke-dasharray]="p.dash ?? 'none'"
+      />
+    }
+
+    @for (m of markerShapes(); track m.index + m.kind) {
+      @if (m.kind === 'blocked') {
+        <circle class="mk-blocked" [attr.cx]="m.x" [attr.cy]="m.y" r="4" />
+      } @else {
+        <polygon [class]="'mk-' + m.kind" [attr.points]="m.points" />
+      }
+    }
+
+    @if (lane()) {
+      <rect class="lane-bg" [attr.x]="PAD.left" [attr.y]="bottom() + 6" [attr.width]="W - PAD.left - PAD.right" [attr.height]="LANE_H" />
+      @for (s of laneSegments(); track s.x) {
+        <rect [attr.x]="s.x" [attr.y]="bottom() + 6" [attr.width]="s.w" [attr.height]="LANE_H" [style.fill]="s.color" />
+      }
+    }
+
+    <line class="axis-line" [attr.x1]="PAD.left" [attr.x2]="PAD.left" [attr.y1]="PAD.top" [attr.y2]="bottom()" />
+    <line class="axis-line" [attr.x1]="PAD.left" [attr.x2]="W - PAD.right" [attr.y1]="bottom()" [attr.y2]="bottom()" />
+  </svg>
+
+  <ul class="legend">
+    @for (item of legend(); track item.label) {
+      <li><span [class]="'sw sw-' + item.shape" [style.color]="item.color"></span>{{ item.label }}</li>
+    }
+  </ul>
+</figure>

@@ -1,0 +1,184 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 20px 24px 32px;
+}
+
+header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 26px;
+  letter-spacing: -0.01em;
+}
+
+header p {
+  margin: 4px 0 0;
+  color: var(--muted);
+}
+
+.totals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin: 0;
+}
+
+.totals dt {
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.totals dd {
+  margin: 2px 0 0;
+  font-size: 22px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.totals dd.danger {
+  color: var(--danger);
+}
+
+.algorithms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+.algorithms button {
+  flex: 1 1 160px;
+  padding: 10px 14px;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  background: transparent;
+}
+
+.algorithms button:hover {
+  background: var(--surface-2);
+}
+
+.algorithms button.selected {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 16px;
+  align-items: start;
+}
+
+.main-col,
+aside {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px 18px;
+}
+
+h2 {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.info p {
+  margin: 0 0 10px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.rule {
+  display: block;
+  padding: 8px 10px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+.pros-cons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.pros-cons ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.pros-cons li {
+  padding-left: 18px;
+  position: relative;
+  margin-bottom: 4px;
+}
+
+.pros li::before,
+.cons li::before {
+  position: absolute;
+  left: 0;
+  font-weight: 700;
+}
+
+.pros li::before {
+  content: '+';
+  color: var(--ok);
+}
+
+.cons li::before {
+  content: '−';
+  color: var(--danger);
+}
+
+.info .try {
+  margin: 0;
+  padding: 10px 12px;
+  border-left: 3px solid var(--accent);
+  background: var(--surface-2);
+  border-radius: 0 8px 8px 0;
+  font-size: 13px;
+}
+
+@media (max-width: 1100px) {
+  main {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  :host {
+    padding: 16px;
+  }
+}

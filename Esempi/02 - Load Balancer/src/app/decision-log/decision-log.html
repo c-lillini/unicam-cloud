@@ -1,0 +1,18 @@
+@if (sim.log().length === 0) {
+  <p class="empty">Le decisioni del load balancer compariranno qui.</p>
+}
+<ol>
+  @for (e of sim.log(); track e.requestId) {
+    <li [class.rejected]="e.server === null">
+      <div class="head">
+        <span class="id">#{{ e.requestId }}</span>
+        <i class="dot" [style.background]="e.client.color"></i>
+        <span class="ip">{{ e.client.ip }}</span>
+        <span class="arrow">→</span>
+        <b>{{ e.server ?? '503' }}</b>
+        <span class="time">t={{ (e.time / 1000).toFixed(1) }}s</span>
+      </div>
+      <div class="reason">{{ e.reason }}</div>
+    </li>
+  }
+</ol>

@@ -1,0 +1,67 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.row button {
+  flex: 1 1 auto;
+}
+
+.servers span {
+  flex: 1;
+  font-size: 14px;
+}
+
+.servers button {
+  flex: 0 0 40px;
+  font-size: 18px;
+  padding: 4px 0;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.slider {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.slider span {
+  display: flex;
+  justify-content: space-between;
+}
+
+.slider b {
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.slider.disabled {
+  opacity: 0.45;
+}
+
+input[type='range'] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+input[type='checkbox'] {
+  accent-color: var(--accent);
+  width: 16px;
+  height: 16px;
+}

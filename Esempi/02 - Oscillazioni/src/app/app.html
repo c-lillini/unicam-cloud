@@ -1,0 +1,35 @@
+<header class="topbar">
+  <div class="brand">
+    <h1>Autoscaling: soglie di isteresi e cool-down</h1>
+    <p>Due autoscaler, lo stesso carico: osserva come le due tecniche evitano le oscillazioni (flapping).</p>
+  </div>
+  <div class="controls">
+    <button type="button" class="primary" (click)="sim.toggle()">
+      {{ sim.running() ? '⏸ Pausa' : '▶ Avvia' }}
+    </button>
+    <button type="button" (click)="sim.tick()" [disabled]="sim.running()" title="Avanza di un passo (5 s)">+5 s</button>
+    <button type="button" (click)="sim.advance(300)" title="Simula istantaneamente 5 minuti">+5 min</button>
+    <button type="button" (click)="sim.reset()">↺ Reset</button>
+    <label class="speed">
+      Velocità
+      <select (change)="setSpeed($event)">
+        @for (s of speeds; track s) {
+          <option [value]="s" [selected]="s === sim.speed()">{{ s }}×</option>
+        }
+      </select>
+    </label>
+    <span class="clock" aria-live="off">t = {{ sim.time() | clock }}</span>
+  </div>
+</header>
+
+<main>
+  <app-load-panel />
+
+  <section class="scalers">
+    @for (s of sim.scalers; track s.id) {
+      <app-scaler-panel [scaler]="s" />
+    }
+  </section>
+
+  <app-theory />
+</main>

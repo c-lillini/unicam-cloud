@@ -1,0 +1,105 @@
+<section class="card theory">
+  <h2>Perché un autoscaler oscilla</h2>
+  <p>
+    Un autoscaler è un sistema di controllo in retroazione: misura una metrica (qui l’utilizzo medio della CPU), la
+    confronta con una soglia e aggiunge o rimuove repliche. Ma <strong>ogni azione modifica la metrica stessa</strong>:
+    aggiungere un pod abbassa l’utilizzo medio, toglierne uno lo alza. Se il sistema non tiene conto di questo effetto,
+    entra in <em>flapping</em>: aggiunge e rimuove repliche di continuo, sprecando risorse e destabilizzando il servizio
+    (avvii a freddo, connessioni interrotte, cache svuotate).
+  </p>
+
+  <div class="theory-grid">
+    <div>
+      <h3>Soglie di isteresi</h3>
+      <p>
+        Con una <strong>soglia unica</strong> (es. 70%) un carico che si trova proprio “a cavallo” della soglia provoca
+        uno scale-out; l’utilizzo scende sotto il 70% e scatta subito lo scale-in, che lo riporta sopra… e così via.
+      </p>
+      <p>
+        L’isteresi usa <strong>due soglie distinte</strong>: si scala in uscita sopra la soglia alta (es. 80%) e in
+        ingresso solo sotto la soglia bassa (es. 40%). La fascia intermedia è una <em>banda morta</em> in cui
+        l’autoscaler non fa nulla. È lo stesso principio del termostato, che accende la caldaia a 19,5 °C e la spegne a
+        20,5 °C.
+      </p>
+      <p>
+        <strong>Quanto larga?</strong> Passando da <em>m</em> a <em>m + k</em> repliche l’utilizzo si riduce di un
+        fattore <em>m/(m+k)</em>: da 1 a 2 pod si dimezza! La banda deve quindi soddisfare
+        <em>soglia_in ≤ soglia_out · m/(m+k)</em>, più un margine per il rumore. Con poche repliche servono bande molto
+        larghe (vedi “Analisi anti-flapping” in ciascun pannello).
+      </p>
+    </div>
+
+    <div>
+      <h3>Cool-down (periodo di raffreddamento)</h3>
+      <p>
+        Dopo un’azione di scaling servono tempo perché le nuove istanze si avviino e perché la metrica rifletta la nuova
+        situazione. Se l’autoscaler rivaluta subito, vede ancora l’utilizzo alto e <strong>aggiunge altre
+        repliche</strong> (<em>overshoot</em>), che poi dovrà togliere.
+      </p>
+      <p>Il cool-down impone una pausa dopo ogni azione. In questo simulatore:</p>
+      <ul>
+        <li><strong>dopo uno scale-out</strong>: nessuna azione per il periodo indicato (diamo ai pod il tempo di partire);</li>
+        <li>
+          <strong>dopo uno scale-in</strong>: nessun altro scale-in per il periodo indicato, ma uno scale-out resta
+          possibile, perché un picco non deve aspettare.
+        </li>
+      </ul>
+      <p>
+        La regola pratica è <strong>“scale out fast, scale in slow”</strong>: cool-down breve (≥ tempo di avvio) in
+        salita, lungo in discesa. Il cool-down da solo però non elimina il flapping, lo rallenta soltanto: serve anche
+        l’isteresi.
+      </p>
+    </div>
+  </div>
+
+  <h3>Esperimenti suggeriti</h3>
+  <ol class="experiments">
+    <li>
+      Scenario <em>Vicino alla soglia</em>, A = <em>Ingenuo</em>, B = <em>Isteresi + cool-down</em>: confronta le
+      inversioni di direzione e le repliche medie.
+    </li>
+    <li>
+      Imposta A su <em>Solo isteresi</em>: il flapping sparisce, ma all’avvio si crea un overshoot (3 repliche invece di
+      2) perché l’autoscaler rivaluta mentre il secondo pod è ancora in avvio. Prova ad alzare il tempo di avvio a 90 s.
+    </li>
+    <li>
+      Imposta A su <em>Solo cool-down</em>: le oscillazioni continuano, solo più lente. Il cool-down non sostituisce
+      l’isteresi.
+    </li>
+    <li>
+      Con B, porta la soglia di scale-in al 60% e il carico base al 90%: la tabella anti-flapping segnala la
+      transizione 1 ↔ 2 come instabile (dopo lo scale-out l’utilizzo scende al 45%, sotto il 60%) e infatti B oscilla
+      tra 1 e 2 repliche, anche se con il cool-down lo fa più lentamente.
+    </li>
+    <li>
+      Scenario <em>Picchi brevi</em>: i picchi durano meno del tempo di reazione. Un cool-down di scale-in lungo
+      mantiene le repliche tra un picco e l’altro (meno carico perso, costo maggiore): è un compromesso.
+    </li>
+  </ol>
+
+  <h3>Nei cloud reali</h3>
+  <ul>
+    <li>
+      <strong>Kubernetes HPA</strong>: valuta la metrica ogni 15 s e calcola
+      <code>desiderate = ceil(attuali × valore / target)</code>. Ignora le variazioni entro una
+      <em>tolleranza</em> del 10% attorno al target (una forma di isteresi) e usa una
+      <code>stabilizationWindowSeconds</code> (default 300 s in discesa, 0 s in salita) che svolge il ruolo del
+      cool-down.
+    </li>
+    <li>
+      <strong>AWS</strong>: EC2 Auto Scaling usa un <em>cooldown</em> predefinito di 300 s per le policy semplici (e
+      un <em>instance warmup</em> per le altre); Application Auto Scaling ha periodi separati
+      <code>ScaleOutCooldown</code> e <code>ScaleInCooldown</code>, e uno scale-out può interrompere il cool-down di
+      scale-in, come in questo simulatore.
+    </li>
+    <li>
+      <strong>Azure Autoscale</strong>: ogni regola ha un <em>cool down</em> (5 minuti di default) e si consiglia un
+      margine adeguato tra le soglie di scale-out e scale-in proprio per evitare il flapping.
+    </li>
+  </ul>
+
+  <details>
+    <summary>Esempio: HPA con comportamento di scaling configurato</summary>
+    <pre><code>{{ hpaExample }}</code></pre>
+  </details>
+</section>

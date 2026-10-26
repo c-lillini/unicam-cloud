@@ -1,0 +1,200 @@
+<article class="card scaler">
+  <header class="card-head">
+    <h2><span class="badge">{{ scaler().id }}</span> {{ scaler().name }}</h2>
+    <div class="chips" role="group" aria-label="Configurazioni predefinite">
+      @for (p of presets; track p.id) {
+        <button type="button" class="chip" [class.active]="activePreset() === p.id" (click)="scaler().applyPreset(p.config)">
+          {{ p.label }}
+        </button>
+      }
+    </div>
+  </header>
+
+  <div class="config">
+    <fieldset [class.off]="!cfg().hysteresis">
+      <legend>
+        <label class="switch">
+          <input type="checkbox" [checked]="cfg().hysteresis" (change)="patch({ hysteresis: checked($event) })" />
+          Soglie di isteresi
+        </label>
+      </legend>
+      <label class="field">
+        <span>{{ cfg().hysteresis ? 'Soglia di scale-out' : 'Soglia unica' }}</span>
+        <input type="range" min="10" max="95" step="5" [value]="cfg().scaleOutThreshold" (input)="setNumber('scaleOutThreshold', $event)" />
+        <output>{{ cfg().scaleOutThreshold }}%</output>
+      </label>
+      <label class="field" [class.disabled]="!cfg().hysteresis">
+        <span>Soglia di scale-in</span>
+        <input
+          type="range"
+          min="5"
+          max="90"
+          step="5"
+          [disabled]="!cfg().hysteresis"
+          [value]="cfg().scaleInThreshold"
+          (input)="setNumber('scaleInThreshold', $event)"
+        />
+        <output>{{ cfg().hysteresis ? cfg().scaleInThreshold + '%' : '—' }}</output>
+      </label>
+    </fieldset>
+
+    <fieldset [class.off]="!cfg().cooldown">
+      <legend>
+        <label class="switch">
+          <input type="checkbox" [checked]="cfg().cooldown" (change)="patch({ cooldown: checked($event) })" />
+          Cool-down
+        </label>
+      </legend>
+      <label class="field" [class.disabled]="!cfg().cooldown">
+        <span>Dopo uno scale-out</span>
+        <input
+          type="range"
+          min="0"
+          max="300"
+          step="15"
+          [disabled]="!cfg().cooldown"
+          [value]="cfg().scaleOutCooldown"
+          (input)="setNumber('scaleOutCooldown', $event)"
+        />
+        <output>{{ cfg().scaleOutCooldown }} s</output>
+      </label>
+      <label class="field" [class.disabled]="!cfg().cooldown">
+        <span>Dopo uno scale-in</span>
+        <input
+          type="range"
+          min="0"
+          max="600"
+          step="15"
+          [disabled]="!cfg().cooldown"
+          [value]="cfg().scaleInCooldown"
+          (input)="setNumber('scaleInCooldown', $event)"
+        />
+        <output>{{ cfg().scaleInCooldown }} s</output>
+      </label>
+    </fieldset>
+
+    <fieldset class="limits">
+      <legend>Limiti</legend>
+      <label class="num">
+        <span>Repliche min</span>
+        <input type="number" min="1" max="20" [value]="cfg().minReplicas" (change)="setNumber('minReplicas', $event)" />
+      </label>
+      <label class="num">
+        <span>Repliche max</span>
+        <input type="number" min="1" max="50" [value]="cfg().maxReplicas" (change)="setNumber('maxReplicas', $event)" />
+      </label>
+      <label class="num">
+        <span>Passo</span>
+        <input type="number" min="1" max="10" [value]="cfg().step" (change)="setNumber('step', $event)" />
+      </label>
+    </fieldset>
+  </div>
+
+  <div class="status">
+    @if (last(); as s) {
+      <span>Repliche <strong>{{ s.replicas }}</strong> ({{ s.ready }} pronte@if (s.replicas > s.ready) {, {{ s.replicas - s.ready }} in avvio})</span>
+      <span>Utilizzo <strong>{{ s.utilization | number: '1.0-0' }}%</strong></span>
+      @if (s.cooldown) {
+        <span class="pill" [class.pill-out]="s.cooldown === 'out'" [class.pill-in]="s.cooldown === 'in'">
+          {{ s.cooldown === 'out' ? 'Cool-down scale-out' : 'Cool-down scale-in' }}: {{ s.cooldownLeft }} s
+        </span>
+      } @else {
+        <span class="pill">Pronto a decidere</span>
+      }
+    } @else {
+      <span class="muted">Avvia la simulazione per vedere l’autoscaler all’opera.</span>
+    }
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <span class="v">{{ stats().scaleOuts }} ▲ / {{ stats().scaleIns }} ▼</span>
+      <span class="l">azioni di scaling</span>
+    </div>
+    <div class="stat" [class.bad]="stats().reversals >= 4" [class.good]="stats().elapsed > 0 && stats().reversals < 2">
+      <span class="v">{{ stats().reversals }}</span>
+      <span class="l">inversioni di direzione (flapping)</span>
+    </div>
+    <div class="stat">
+      <span class="v">{{ stats().blocked }}</span>
+      <span class="l">decisioni bloccate dal cool-down</span>
+    </div>
+    <div class="stat">
+      <span class="v">{{ summary().avgReplicas | number: '1.2-2' }}</span>
+      <span class="l">repliche medie (costo)</span>
+    </div>
+    <div class="stat" [class.bad]="summary().unservedPct > 5">
+      <span class="v">{{ summary().unservedPct | number: '1.1-1' }}%</span>
+      <span class="l">carico non servito ({{ summary().overloadPct | number: '1.0-0' }}% del tempo)</span>
+    </div>
+  </div>
+
+  <h3>Utilizzo CPU e decisioni</h3>
+  <app-time-chart
+    label="Utilizzo medio CPU dei pod pronti con soglie e decisioni dell'autoscaler"
+    unit="%"
+    [times]="times()"
+    [capacity]="sim.windowSize"
+    [yMax]="100"
+    [height]="230"
+    [series]="utilSeries()"
+    [lines]="thresholdLines()"
+    [bands]="bands()"
+    [markers]="utilMarkers()"
+    [lane]="cooldownLane()"
+    [extraLegend]="utilLegend()"
+  />
+
+  <h3>Repliche</h3>
+  <app-time-chart
+    label="Repliche richieste, pronte e minimo necessario"
+    [times]="times()"
+    [capacity]="sim.windowSize"
+    [yMax]="replicaMax()"
+    [height]="190"
+    [series]="replicaSeries()"
+  />
+
+  <details class="analysis">
+    <summary>Analisi anti-flapping delle soglie</summary>
+    <p>
+      Passando da <em>m</em> a <em>m + k</em> repliche (k = passo) l’utilizzo medio si riduce di un fattore
+      <em>m / (m + k)</em>. Se dopo uno scale-out l’utilizzo scende sotto la soglia di scale-in, l’autoscaler rimuove
+      subito la replica appena aggiunta (e viceversa). Serve quindi:
+      <strong>soglia scale-in ≤ soglia scale-out × m / (m + k)</strong>.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Transizione</th>
+          <th>Utilizzo dopo lo scale-out</th>
+          <th>Soglia scale-in attuale</th>
+          <th>Esito</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (r of antiFlapping(); track r.from) {
+          <tr [class.ko]="!r.ok">
+            <td>{{ r.from }} ↔ {{ r.to }}</td>
+            <td>{{ cfg().scaleOutThreshold }}% → {{ r.after | number: '1.0-1' }}%</td>
+            <td>{{ lower() }}%</td>
+            <td>{{ r.ok ? '✓ stabile' : '✗ rischio flapping' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    <p class="muted">
+      Nota: con poche repliche ogni pod pesa molto, quindi la banda deve essere più larga. Il rumore del carico
+      richiede un ulteriore margine.
+    </p>
+  </details>
+
+  <h3>Registro delle decisioni</h3>
+  <ol class="log">
+    @for (e of events(); track e.id) {
+      <li [class]="'ev ev-' + e.kind"><time>{{ e.t | clock }}</time> {{ e.message }}</li>
+    } @empty {
+      <li class="muted">Nessuna decisione registrata.</li>
+    }
+  </ol>
+</article>
