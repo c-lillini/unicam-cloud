@@ -10,25 +10,29 @@
 
 ## 0) Requisiti & Note
 
-* **Regione**: usa una (es. `eu-east-1`) e **una sola AZ** (es. `eu-east-1a`).
+* **Regione**: `us-east-1` (N. Virginia) e **una sola AZ**: `us-east-1a`.
 
 * **Nomenclatura**:
   
   * VPC: `vpc-wp-lab`
   * Subnet pubblica: `subnet-wp-lab-public-a` (p.es. `10.0.1.0/24`)
   * Subnet privata DB: `subnet-wp-lab-db-a` (p.es. `10.0.10.0/24`)
-  * Route table pubblica: `rtb-public`
-  * Route table privata: `rtb-private`
+  * Route table pubblica: `rtb-wp-lab-public`
+  * Route table privata: `rtb-wp-lab-private`
   * Internet Gateway: `igw-wp-lab`
   * NAT Gateway: `nat-wp-lab`
-  * SG App: `sg-wp-app`
-  * SG DB: `sg-wp-db`
+  * SG App: `gs-wp-app`
+  * SG DB: `gs-wp-db`
   * EC2 App: `ec2-wp-app`
   * EC2 DB: `ec2-wp-db`
   * Key pair: `kp-wp-lab`
   * Tag: `Project=wp-lab`
 
 * **Costi**: [Calcolatore AWS](https://calculator.aws/#/estimate?id=76711d4132a435629a8e7edd3ddd6ae87125a29b)
+  
+  * Il **NAT Gateway** si paga a ore anche se non transita traffico: è la voce più costosa del lab.
+  * Ogni **IPv4 pubblico** (IP dell'istanza App ed Elastic IP del NAT) si paga a ore (~0,005 $/h).
+  * Gli account AWS creati dopo il **15/07/2025** non hanno più i 12 mesi di Free Tier ma un credito iniziale (piano Free di 6 mesi): queste risorse consumano il credito, quindi esegui sempre la **Pulizia** (sezione 10).
 
 ---
 
@@ -52,12 +56,12 @@
    * **Internet Gateways** → **Create internet gateway** → Name `igw-wp-lab` → **Create** 
    * **Internet Gateway** `igw-wp-lab` → **Attach to VPC** `vpc-wp-lab`.
 
-3. **Subnets** (scegli **una sola AZ**, es. `eu-east-1a`)
+3. **Subnets** (una sola AZ: `us-east-1a`)
    
    * **Subnets** → **Create subnet** (VPC: `vpc-wp-lab`)
      
-     * `subnet-wp-lab-public-a` — AZ: `eu-east-1a`, CIDR `10.0.1.0/24`
-     * `subnet-wp-lab-db-a` — AZ: `eu-east-1a`, CIDR `10.0.10.0/24`
+     * `subnet-wp-lab-public-a` — AZ: `us-east-1a`, CIDR `10.0.1.0/24`
+     * `subnet-wp-lab-db-a` — AZ: `us-east-1a`, CIDR `10.0.10.0/24`
 
 4. **Route table pubblica**
    
@@ -71,7 +75,10 @@
    
    * **NAT Gateways** → **Create NAT gateway**
      
-     * Subnet: `subnet-wp-lab-public-a`, Elastic IP: quello allocato, Name: `nat-wp-lab` → **Create**.
+     * Name: `nat-wp-lab`, Availability mode: **Zonal**, Subnet: `subnet-wp-lab-public-a`, Connectivity type: **Public**, Elastic IP: quello allocato → **Create**.
+     * Attendi lo stato **Available**.
+     
+     > La modalità **Regional** (introdotta a fine 2025) crea un NAT che si estende automaticamente su più AZ e non richiede una subnet pubblica: in questo lab Single-AZ usiamo la modalità **Zonal**.
    
    * **Route Tables** → **Create route table** → Name `rtb-wp-lab-private`, VPC `vpc-wp-lab` → **Create**.
    
@@ -102,7 +109,7 @@
      * Inbound:
        
        * MySQL/Aurora TCP 3306 → **Source: `gs-wp-app`** (seleziona SG come sorgente)
-       * (Opz.) SSH TCP 22 → **Source: `gs-wp-app`** (amministrazione via jump dalla App)
+       * SSH TCP 22 → **Source: `gs-wp-app`** (amministrazione via jump host dalla App, vedi passo 8)
      
      * Outbound: **All traffic** (default).
 
@@ -111,7 +118,19 @@
 ## 4) Key pair
 
 * **EC2 → Key pairs → Create key pair**
-  Name `kp-wp-lab`, Type **RSA**, formato `.pem` → salva con permessi corretti.
+  Name `kp-wp-lab`, Type **RSA**, formato `.pem` → il file viene scaricato automaticamente.
+
+* Restringi i permessi della chiave (altrimenti `ssh` la rifiuta):
+  
+  ```bash
+  # Linux / macOS
+  chmod 400 kp-wp-lab.pem
+  ```
+  
+  ```powershell
+  # Windows (PowerShell)
+  icacls kp-wp-lab.pem /inheritance:r /grant:r "$($env:USERNAME):(R)"
+  ```
 
 ---
 
@@ -203,24 +222,14 @@
 
 ## 8) Installazione MariaDB
 
-- Reperire l'indirizzo IP dell'istanza DB
+- Reperire l'indirizzo IP privato dell'istanza DB
 
 - Uscire dalla sessione SSH della App (se già connessi)
 
-- Copiare la chiave privata sull'instanza App utilizzando SCP
+- Collegarsi all'istanza DB usando la App come **jump host** (`ssh -J`).
   
   ```bash
-  scp -i kp-wp-lab.pem kp-wp-lab.pem ec2-user@<Public-IP-ec2-wp-app>:/tmp
-  ```
-
-- Collegarsi in SSH alla App e fare jump all'istanza DB
-  
-  ```bash
-  ssh -i kp-wp-lab.pem ec2-user@<Public-IP-ec2-wp-app>
-  #Modificare i permessi della chiave
-  chmod 600 /tmp/kp-wp-lab.pem
-  #Collegarsi alla macchina DB
-  ssh -i /tmp/kp-wp-lab.pem ec2-user@<Private-IP-ec2-wp-db>
+  ssh -i kp-wp-lab.pem -o ProxyCommand="ssh -i kp-wp-lab.pem -W %h:%p ec2-user@<Public-IP-ec2-wp-app>" ec2-user@<Private-IP-ec2-wp-db>
   ```
 
 - Installare e configurare MariaDB
@@ -229,25 +238,37 @@
   # Installazione MariaDB
   sudo su
   dnf -y update
-  dnf -y install mariadb105-server mariadb105
+  dnf -y install mariadb1011-server mariadb1011
   systemctl enable --now mariadb
   
-  # Configuraziaone iniziale MariaDB
+  # Configurazione iniziale MariaDB
   mysql_secure_installation
-  mysql -u root –p
   
-  # Creazione DB e utente per WordPress
+  # Accesso alla console di MariaDB
+  mysql -u root -p
+  ```
+
+- Dalla console di MariaDB (`MariaDB [(none)]>`), creare database e utente per WordPress
+  
+  ```sql
   CREATE DATABASE IF NOT EXISTS wordpress;
-  CREATE USER 'wpuser'@'10.0.1.%' IDENTIFIED BY '<password>';
+  CREATE USER 'wpuser'@'10.0.1.%' IDENTIFIED BY 'password';
   GRANT ALL PRIVILEGES ON wordpress.* TO 'wpuser'@'10.0.1.%'; 
   FLUSH PRIVILEGES;
+  EXIT;
   ```
 
 ---
 
 ## 9) Test
 
-* Apri `http://<Public-IP-ec2-wp-app>/` e completa il setup di **WordPress**.
+* Apri `http://<Public-IP-ec2-wp-app>/` e completa il setup di **WordPress** con i parametri del database:
+  
+  * Database Name: `wordpress`
+  * Username: `wpuser`
+  * Password: quella scelta al passo 8
+  * Database Host: `<Private-IP-ec2-wp-db>`
+  * Table Prefix: `wp_` (default)
 
 ---
 
@@ -269,4 +290,4 @@
 
 4. **Key pair**: elimina se non serve.
 
-5. **Controllo finale**: **AWS Resource Explorer** → nessuna risorsa residua.
+5. **Controllo finale**: **Resource Groups & Tag Editor** → *Tag Editor* → Region `us-east-1`, Resource types *All supported*, Tag `Project=wp-lab` → nessuna risorsa residua. Verifica anche in **EC2** (Instances, Volumes, Elastic IPs) e **VPC** (NAT Gateways) che non sia rimasto nulla.
