@@ -1,0 +1,18 @@
+{
+  "name": "sondaggio-effimero",
+  "version": "1.0.0",
+  "description": "Demo PaaS: un sondaggio live il cui stato vive solo in memoria. Applicazioni Web, Mobile e Cloud - UniCam",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^4.21.2"
+  },
+  "license": "MIT",
+  "private": true
+}

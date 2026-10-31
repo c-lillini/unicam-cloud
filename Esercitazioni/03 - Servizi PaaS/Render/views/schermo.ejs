@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sondaggio — schermo</title>
+  <link rel="stylesheet" href="/stile.css">
+</head>
+<body class="schermo">
+
+  <header>
+    <h1><%= domanda %></h1>
+    <p class="indirizzo">vota da <span id="dominio">questo indirizzo</span></p>
+  </header>
+
+  <main id="grafico"></main>
+
+  <footer>
+    <span id="totale">0 voti</span>
+    <span class="diagnostica" id="diagnostica"></span>
+  </footer>
+
+  <script>
+    document.getElementById('dominio').textContent = location.host;
+
+    function disegna(s) {
+      var massimo = Math.max(1, ...Object.values(s.voti));
+      document.getElementById('grafico').innerHTML = Object.entries(s.voti)
+        .map(function (coppia) {
+          var etichetta = coppia[0], n = coppia[1];
+          var larghezza = (n / massimo) * 100;
+          return '<div class="riga">'
+               +   '<div class="etichetta">' + etichetta + '<b>' + n + '</b></div>'
+               +   '<div class="pista"><div class="barra" style="width:' + larghezza + '%"></div></div>'
+               + '</div>';
+        }).join('');
+
+      document.getElementById('totale').textContent =
+        s.totale === 1 ? '1 voto' : s.totale + ' voti';
+
+      document.getElementById('diagnostica').textContent =
+        'processo ' + s.pid + ' · acceso da ' + s.uptimeSecondi + ' s · '
+        + s.richiesteServite + ' richieste servite';
+    }
+
+    function aggiorna() {
+      fetch('/stato').then(function (r) { return r.json(); }).then(disegna).catch(function () {});
+    }
+
+    aggiorna();
+    setInterval(aggiorna, 1500);
+  </script>
+
+</body>
+</html>

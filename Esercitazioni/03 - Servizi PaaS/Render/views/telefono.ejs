@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sondaggio</title>
+  <link rel="stylesheet" href="/stile.css">
+</head>
+<body class="telefono">
+
+  <main id="votazione">
+    <h1><%= domanda %></h1>
+    <% opzioni.forEach(function (opzione) { %>
+      <button class="opzione" data-opzione="<%= opzione %>"><%= opzione %></button>
+    <% }); %>
+  </main>
+
+  <main id="conferma" hidden>
+    <div class="spunta">✓</div>
+    <h1>Grazie, voto registrato</h1>
+    <p class="nota">Adesso guarda lo schermo.</p>
+  </main>
+
+  <script>
+    document.querySelectorAll('.opzione').forEach(function (bottone) {
+      bottone.addEventListener('click', function () {
+        document.querySelectorAll('.opzione').forEach(function (b) { b.disabled = true; });
+        fetch('/voto/' + encodeURIComponent(bottone.dataset.opzione), { method: 'POST' })
+          .then(function () {
+            document.getElementById('votazione').hidden = true;
+            document.getElementById('conferma').hidden = false;
+          })
+          .catch(function () {
+            document.querySelectorAll('.opzione').forEach(function (b) { b.disabled = false; });
+            alert('Non ha funzionato, riprova.');
+          });
+      });
+    });
+  </script>
+
+</body>
+</html>

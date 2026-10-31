@@ -1,0 +1,144 @@
+/* --------------------------------------------------------------------------
+   Foglio di stile condiviso dalle due viste.
+   Le misure sono in vh / vw: la pagina proiettata deve leggersi dal fondo
+   dell'aula, e quella sul telefono deve avere bottoni grandi abbastanza.
+   -------------------------------------------------------------------------- */
+
+:root {
+  --sfondo:    #0b1220;
+  --superficie:#17233a;
+  --testo:     #f1f5f9;
+  --tenue:     #7c8aa5;
+  --accento:   #3b82f6;
+  --conferma:  #4ade80;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--sfondo);
+  color: var(--testo);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------------------------- vista telefono ---------------------------- */
+
+body.telefono {
+  display: flex;
+  align-items: center;
+  min-height: 100vh;
+  padding: 6vw;
+}
+
+body.telefono main { width: 100%; }
+
+body.telefono h1 {
+  font-size: clamp(1.6rem, 6vw, 2.4rem);
+  font-weight: 650;
+  line-height: 1.25;
+  margin: 0 0 8vw;
+}
+
+.opzione {
+  display: block;
+  width: 100%;
+  margin-bottom: 3.5vw;
+  padding: 5.5vw;
+  border: 0;
+  border-radius: 16px;
+  background: var(--accento);
+  color: #fff;
+  font: inherit;
+  font-size: clamp(1.2rem, 5.5vw, 1.9rem);
+  font-weight: 650;
+  cursor: pointer;
+  transition: transform .12s, opacity .2s;
+}
+
+.opzione:active { transform: scale(.97); }
+.opzione:disabled { opacity: .4; }
+
+.spunta {
+  font-size: 22vw;
+  line-height: 1;
+  color: var(--conferma);
+  margin-bottom: 4vw;
+}
+
+.nota { color: var(--tenue); font-size: 1.1rem; margin: 0; }
+
+/* --------------------------- vista proiettore --------------------------- */
+
+body.schermo {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 5vh 5vw 3vh;
+}
+
+body.schermo h1 {
+  font-size: 5.4vh;
+  font-weight: 650;
+  line-height: 1.15;
+  margin: 0;
+}
+
+.indirizzo {
+  margin: 1.4vh 0 0;
+  font-size: 2.6vh;
+  color: var(--tenue);
+}
+
+.indirizzo span { color: var(--accento); font-weight: 650; }
+
+#grafico {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3vh;
+  padding: 3vh 0;
+}
+
+.etichetta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 3.6vh;
+  margin-bottom: 1vh;
+}
+
+.etichetta b { font-size: 4.4vh; }
+
+.pista {
+  height: 5.5vh;
+  background: var(--superficie);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.barra {
+  height: 100%;
+  width: 0;
+  background: var(--accento);
+  border-radius: 10px;
+  transition: width .5s cubic-bezier(.22, 1, .36, 1);
+}
+
+body.schermo footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-top: 1px solid var(--superficie);
+  padding-top: 2vh;
+}
+
+#totale { font-size: 3.4vh; font-weight: 650; }
+
+.diagnostica {
+  font-size: 2vh;
+  color: var(--tenue);
+  font-variant-numeric: tabular-nums;
+}
