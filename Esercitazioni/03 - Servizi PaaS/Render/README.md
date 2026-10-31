@@ -4,7 +4,7 @@ Applicazione web Node.js per un sondaggio in tempo reale: i partecipanti votano 
 
 I voti sono conservati **solo in memoria**: a ogni riavvio del processo (nuovo deploy, sospensione del servizio, riavvio manuale) il sondaggio riparte da zero.
 
-Realizzata con **Express** ed **EJS**.
+Realizzata con **Express**, **EJS** e **qrcode**.
 
 ---
 
@@ -29,7 +29,7 @@ Realizzata con **Express** ed **EJS**.
 |---|---|---|
 | `GET` | `/` | Pagina di voto: la domanda e un bottone per ogni opzione |
 | `POST` | `/voto/:opzione` | Registra un voto. Risponde `200` se accettato, `400` se l'opzione non esiste |
-| `GET` | `/schermo` | Pagina dei risultati, aggiornata ogni 1,5 secondi |
+| `GET` | `/schermo` | Pagina dei risultati con QR code per votare, aggiornata ogni 1,5 secondi |
 | `GET` | `/stato` | Stato corrente del sondaggio in formato JSON |
 
 ---
@@ -52,7 +52,7 @@ L'applicazione è in ascolto sulla porta `3000` (o su quella indicata dalla vari
 - `http://localhost:3000` → pagina di voto
 - `http://localhost:3000/schermo` → pagina dei risultati
 
-Per votare da un telefono collegato alla stessa rete, sostituire `localhost` con l'indirizzo IP del computer (es. `http://192.168.1.20:3000`).
+Per votare da un telefono collegato alla stessa rete, sostituire `localhost` con l'indirizzo IP del computer (es. `http://192.168.1.20:3000`). Lo stesso vale per la pagina dei risultati: il QR code riporta l'indirizzo con cui è stata aperta, quindi aprendola da `localhost` il QR non sarebbe raggiungibile dai telefoni.
 
 ---
 
@@ -88,8 +88,8 @@ Ogni push sul branch collegato avvia automaticamente un nuovo deploy.
 
 ## Utilizzo
 
-1. Aprire la pagina **`/schermo`** sul dispositivo collegato al proiettore. In alto è indicato l'indirizzo da usare per votare.
-2. I partecipanti aprono la pagina **`/`** dal telefono e toccano una delle opzioni. Ogni pagina consente un solo voto; ricaricandola si può votare di nuovo.
+1. Aprire la pagina **`/schermo`** sul dispositivo collegato al proiettore. In alto a destra compare un **QR code** che porta alla pagina di voto; accanto alla domanda è indicato anche l'indirizzo da digitare.
+2. I partecipanti inquadrano il QR code (oppure aprono la pagina **`/`**) dal telefono e toccano una delle opzioni. Ogni pagina consente un solo voto; ricaricandola si può votare di nuovo.
 3. Sullo schermo le barre e il totale dei voti si aggiornano automaticamente.
 
 ### Riga di diagnostica

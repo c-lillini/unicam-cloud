@@ -9,8 +9,11 @@
 <body class="schermo">
 
   <header>
-    <h1><%= domanda %></h1>
-    <p class="indirizzo">vota da <span id="dominio">questo indirizzo</span></p>
+    <div>
+      <h1><%= domanda %></h1>
+      <p class="indirizzo">inquadra il QR code o vota da <span id="dominio">questo indirizzo</span></p>
+    </div>
+    <div class="qrcode"><%- qrCode %></div>
   </header>
 
   <main id="grafico"></main>
