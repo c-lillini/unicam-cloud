@@ -1,0 +1,12 @@
+<div class="tokens" [class.ids]="showIds()" dir="auto">
+  @for (p of pieces(); track $index) {
+    <span class="tok c{{ $index % 6 }}" [class.partial]="p.partial" [title]="tooltip(p)">{{
+      showIds() ? p.id : p.label
+    }}</span>
+    @if (p.newline && !showIds()) {
+      <br />
+    }
+  } @empty {
+    <span class="muted small">Nessun token: scrivi qualcosa.</span>
+  }
+</div>

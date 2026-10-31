@@ -1,0 +1,99 @@
+<section class="card">
+  <div class="card-head">
+    <h2>La stessa frase, lingue diverse</h2>
+    <button type="button" class="small" (click)="reset()">↺ Frasi di esempio</button>
+  </div>
+  <p class="hint">
+    Ogni cella riporta il numero di token e, per le traduzioni, quante volte sono rispetto alla
+    frase inglese con lo stesso tokenizer (<strong>×1,00</strong> = come l’inglese). Le frasi sono
+    modificabili. Clicca una cella per vedere i token.
+  </p>
+
+  <div class="table-wrap">
+    <table class="compare">
+      <thead>
+        <tr>
+          <th scope="col">Lingua</th>
+          <th scope="col" class="text-col">Frase</th>
+          @for (t of tokenizers.catalog; track t.id) {
+            <th scope="col" class="num">
+              <div>{{ t.name }}</div>
+              <div class="muted small">{{ t.vendor }}</div>
+              @if (tokenizers.status(t.id) !== 'ready') {
+                <app-tokenizer-status [id]="t.id" />
+              }
+            </th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (r of table(); track r.row.code) {
+          <tr [class.extra]="!r.row.translation">
+            <th scope="row">{{ r.row.label }}</th>
+            <td class="text-col">
+              <input
+                type="text"
+                dir="auto"
+                spellcheck="false"
+                [attr.aria-label]="'Frase in ' + r.row.label"
+                [value]="r.row.text"
+                (input)="edit(r.row.code, $event)"
+              />
+            </td>
+            @for (c of r.cells; track $index) {
+              @let tid = tokenizers.catalog[$index].id;
+              <td class="num">
+                @if (c.tokens !== null) {
+                  <button
+                    type="button"
+                    class="cell {{ heat(c.vsEnglish) }}"
+                    [class.selected]="isSelected(r.row.code, tid)"
+                    (click)="select(r.row.code, tid)"
+                  >
+                    <strong>{{ c.tokens }}</strong>
+                    @if (c.vsEnglish !== null) {
+                      <span class="small">×{{ c.vsEnglish | number: '1.2-2' }}</span>
+                    }
+                  </button>
+                } @else {
+                  <span class="muted">—</span>
+                }
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="card">
+  @let d = detail();
+  <div class="card-head">
+    <h2>{{ d.sample.label }} · {{ d.def.name }}</h2>
+    @if (d.pieces) {
+      <span class="muted">{{ d.pieces.length }} token</span>
+    }
+  </div>
+  @if (d.pieces) {
+    <app-token-view [pieces]="d.pieces" />
+  } @else {
+    <app-tokenizer-status [id]="d.def.id" />
+  }
+</section>
+
+<section class="card theory">
+  <h2>Perché alcune lingue “costano” più token</h2>
+  <p>
+    Il vocabolario di un tokenizer BPE si costruisce partendo dai singoli byte e unendo, uno dopo
+    l’altro, le coppie che compaiono più spesso nei testi di addestramento. Se quei testi sono in
+    gran parte in inglese, le parole inglesi diventano token interi, mentre le altre lingue restano
+    spezzate in pezzi più piccoli: <strong>la stessa informazione richiede più token</strong>.
+  </p>
+  <p>
+    Più token significano meno testo nella <em>context window</em> del modello, risposte più lente
+    e, con le API cloud che fatturano a token, un costo maggiore. I vocabolari più recenti e più
+    grandi (GPT-4o rispetto a GPT-4, Gemma con 262 mila token) riducono il divario: confronta le
+    colonne.
+  </p>
+</section>

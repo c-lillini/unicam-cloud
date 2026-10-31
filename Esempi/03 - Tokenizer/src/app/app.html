@@ -1,0 +1,32 @@
+<header class="topbar">
+  <div class="brand">
+    <h1>Tokenizer: come un LLM legge il testo</h1>
+    <p>Il testo diviso in token dai tokenizer reali di GPT, Llama e Gemma.</p>
+  </div>
+  <nav class="tabs" role="tablist" aria-label="Viste">
+    <button
+      type="button"
+      role="tab"
+      [attr.aria-selected]="view() === 'tokenize'"
+      [class.active]="view() === 'tokenize'"
+      (click)="view.set('tokenize')"
+    >
+      Tokenizza
+    </button>
+    <button
+      type="button"
+      role="tab"
+      [attr.aria-selected]="view() === 'compare'"
+      [class.active]="view() === 'compare'"
+      (click)="view.set('compare')"
+    >
+      Confronta lingue
+    </button>
+  </nav>
+</header>
+
+<main>
+  <!-- Le viste restano in vita quando si cambia scheda, così il testo scritto non si perde. -->
+  <div class="view" [hidden]="view() !== 'tokenize'"><app-tokenize-view /></div>
+  <div class="view" [hidden]="view() !== 'compare'"><app-compare-view /></div>
+</main>

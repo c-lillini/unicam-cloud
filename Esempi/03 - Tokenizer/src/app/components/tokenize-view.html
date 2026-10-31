@@ -1,0 +1,117 @@
+<section class="card">
+  <div class="card-head">
+    <h2>Tokenizer</h2>
+    <div class="chips" role="radiogroup" aria-label="Tokenizer">
+      @for (t of tokenizers.catalog; track t.id) {
+        <button
+          type="button"
+          class="chip"
+          role="radio"
+          [attr.aria-checked]="t.id === selected()"
+          [class.active]="t.id === selected()"
+          (click)="select(t.id)"
+        >
+          {{ t.name }}
+        </button>
+      }
+    </div>
+  </div>
+  <p class="hint">
+    <strong>{{ def().vendor }}</strong> · usato da {{ def().models }} · vocabolario di
+    {{ def().vocabSize | number }} token
+    @if (def().source.kind === 'huggingface') {
+      · scaricato da Hugging Face al primo uso
+    }
+  </p>
+
+  <aside class="note">
+    <strong>Perché non c’è Claude?</strong>
+    Il tokenizer dei modelli Claude 3 e successivi non è pubblico: Anthropic non ne distribuisce il
+    vocabolario. Il numero esatto di token di un testo si ottiene solo chiedendolo all’API (<code
+      >POST /v1/messages/count_tokens</code
+    >), che richiede una chiave e quindi un backend: un’app solo frontend come questa non può
+    usarla. Ricorda comunque che lo stesso testo produce un numero di token diverso per ogni
+    modello: confronta i tokenizer qui sopra.
+  </aside>
+</section>
+
+<section class="card">
+  <div class="card-head">
+    <h2>Testo</h2>
+    <button type="button" class="small" (click)="reset()">↺ Testo di esempio</button>
+  </div>
+  <textarea
+    class="input-text"
+    rows="6"
+    dir="auto"
+    spellcheck="false"
+    aria-label="Testo da dividere in token"
+    [value]="text()"
+    (input)="onInput($event)"
+  ></textarea>
+
+  <div class="stats">
+    <div class="stat">
+      <span>Caratteri</span><output>{{ stats().chars | number }}</output>
+    </div>
+    <div class="stat">
+      <span>Parole</span><output>{{ stats().words | number }}</output>
+    </div>
+    <div class="stat">
+      <span>Byte UTF-8</span><output>{{ stats().bytes | number }}</output>
+    </div>
+    <div class="stat main">
+      <span>Token</span><output>{{ pieces() ? (pieces()!.length | number) : '…' }}</output>
+    </div>
+    <div class="stat">
+      <span>Token per parola</span>
+      <output>{{ tokensPerWord() !== null ? (tokensPerWord() | number: '1.2-2') : '—' }}</output>
+    </div>
+  </div>
+</section>
+
+<section class="card">
+  <div class="card-head">
+    <h2>Token</h2>
+    <label class="switch small">
+      <input type="checkbox" [checked]="showIds()" (change)="showIds.set(!showIds())" />
+      Mostra gli ID (ciò che il modello riceve davvero)
+    </label>
+  </div>
+  <p class="hint">
+    Ogni blocchetto è un token; passa sopra con il mouse per vederne ID e byte. Lo spazio è
+    <code>·</code>, l’a capo <code>↵</code>.
+    @if (fragments() > 0) {
+      I blocchetti tratteggiati ({{ fragments() }}) sono <strong>frammenti di carattere</strong>:
+      byte UTF-8 che da soli non formano un carattere valido.
+    }
+  </p>
+
+  @if (pieces(); as p) {
+    <app-token-view [pieces]="p" [showIds]="showIds()" />
+  } @else {
+    <app-tokenizer-status [id]="selected()" />
+  }
+</section>
+
+<section class="card theory">
+  <h2>Cosa sono i token</h2>
+  <p>
+    Un modello linguistico non legge lettere né parole: legge una sequenza di numeri interi, gli
+    <strong>ID dei token</strong>. Il <em>tokenizer</em> trasforma il testo in questa sequenza
+    usando un vocabolario fisso, costruito una volta per tutte prima dell’addestramento del modello.
+  </p>
+  <p>
+    Quasi tutti i modelli moderni usano varianti di <strong>BPE</strong> (<em>Byte Pair Encoding</em
+    >): il testo viene convertito in byte UTF-8 e i byte vengono uniti nei pezzi più lunghi presenti
+    nel vocabolario. Le parole frequenti diventano un solo token, quelle rare vengono spezzate in
+    più parti; un carattere raro (un’emoji, un ideogramma) può invece essere spezzato in più token,
+    ognuno dei quali contiene solo alcuni dei suoi byte.
+  </p>
+  <p>
+    Il numero di token determina quanto testo entra nella <em>context window</em> del modello e
+    quanto costa una richiesta alle API: per questo conviene saperlo stimare. Una regola empirica
+    per l’inglese è circa 4 caratteri per token; prova a verificarla, e a vedere come cambia in
+    italiano.
+  </p>
+</section>
