@@ -1,0 +1,10 @@
+meta {
+  name: 01 - OpenAI (ChatGPT)
+  seq: 1
+}
+
+vars:pre-request {
+  openaiBaseUrl: https://api.openai.com/v1/
+  openaiModel: gpt-6-luna
+  openaiApiKey: {{process.env.OPENAI_API_KEY}}
+}

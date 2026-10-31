@@ -1,0 +1,11 @@
+meta {
+  name: 02 - Anthropic (Claude)
+  seq: 2
+}
+
+vars:pre-request {
+  anthropicModel: claude-haiku-5-5
+  anthropicApiKey: {{process.env.ANTHROPIC_API_KEY}}
+  anthropicVersion: 2026-10-21
+  anthropicBaseUrl: https://api.anthropic.com/v1/
+}

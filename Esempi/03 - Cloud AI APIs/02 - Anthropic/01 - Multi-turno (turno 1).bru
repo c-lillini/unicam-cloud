@@ -1,0 +1,49 @@
+meta {
+  name: 01 - Multi-turno (turno 1)
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{anthropicBaseUrl}}/messages
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  x-api-key: {{anthropicApiKey}}
+  anthropic-version: {{anthropicVersion}}
+}
+
+body:json {
+  {
+    "model": "{{anthropicModel}}",
+    "max_tokens": 1024,
+    "system": "Sei un assistente didattico del corso di Cloud Computing. Rispondi in italiano e in modo conciso.",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Che cos'è la virtualizzazione hardware?"
+      }
+    ]
+  }
+}
+
+assert {
+  res.status: eq 200
+}
+
+script:post-response {
+  const testo = res.body.content[0].text;
+  bru.setVar("anthropicRisposta", JSON.stringify(testo).slice(1, -1));
+  console.log("Token input/output:", res.body.usage.input_tokens, res.body.usage.output_tokens);
+}
+
+docs {
+  # Multi-turno, turno 1 - Anthropic
+  
+  Come per Chat Completions il server non conserva nulla: lo script salva il testo, che qui sta in `content[0].text`.
+  Tre provider/API, tre percorsi diversi per la stessa informazione: in un'applicazione reale la differenza si incapsula in un adapter
+  (*vendor abstraction*, come nei discorsi su lock-in e multi-cloud).
+}

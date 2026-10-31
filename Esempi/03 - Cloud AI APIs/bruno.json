@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Cloud AI APIs - UniCam",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

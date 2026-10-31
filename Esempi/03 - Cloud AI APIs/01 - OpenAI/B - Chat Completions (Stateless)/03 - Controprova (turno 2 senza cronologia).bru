@@ -1,0 +1,46 @@
+meta {
+  name: 03 - Controprova (turno 2 senza cronologia)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{openaiBaseUrl}}/chat/completions
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{openaiApiKey}}
+}
+
+body:json {
+  {
+    "model": "{{openaiModel}}",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Sei un assistente didattico del corso di Cloud Computing. Rispondi in italiano e in modo conciso."
+      },
+      {
+        "role": "user",
+        "content": "E in che cosa si differenzia da quello che fanno i container?"
+      }
+    ]
+  }
+}
+
+assert {
+  res.status: eq 200
+}
+
+docs {
+  # Controprova - senza cronologia
+  
+  Stessa domanda senza i messaggi precedenti. Il modello non sa a cosa si riferisca "da quello": nessuna traccia della conversazione e' rimasta sul server.
+  
+  Se l'API non ha memoria, come fa l'interfaccia web di ChatGPT a ricordarsi di cosa stavate parlando? La memoria non e' nel modello
+  ne' nell'API: e' nell'applicazione, che conserva i messaggi in un proprio database e li rispedisce a ogni turno. E' la stessa separazione
+  tra servizio stateless e applicazione stateful che si ritrova tra pod effimeri e volumi persistenti in Kubernetes.
+}

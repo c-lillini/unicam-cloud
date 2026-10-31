@@ -1,0 +1,57 @@
+meta {
+  name: 02 - Multi-turno (turno 2, con cronologia)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{anthropicBaseUrl}}/messages
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  x-api-key: {{anthropicApiKey}}
+  anthropic-version: {{anthropicVersion}}
+}
+
+body:json {
+  {
+    "model": "{{anthropicModel}}",
+    "max_tokens": 1024,
+    "system": "Sei un assistente didattico del corso di Cloud Computing. Rispondi in italiano e in modo conciso.",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Che cos'è la virtualizzazione hardware?"
+      },
+      {
+        "role": "assistant",
+        "content": "{{anthropicRisposta}}"
+      },
+      {
+        "role": "user",
+        "content": "E in che cosa si differenzia da quello che fanno i container?"
+      }
+    ]
+  }
+}
+
+assert {
+  res.status: eq 200
+}
+
+docs {
+  # Multi-turno, turno 2 - Anthropic
+  
+  Stesso meccanismo di Chat Completions: la cronologia la rispedisce il client. L'array `messages` contiene solo i turni;
+  le istruzioni stanno nel parametro `system`.
+  
+  `usage.input_tokens` cresce rispetto al turno 1: si paga il contesto a ogni turno.
+  
+  ## Esercizio di sintesi
+  
+  Eseguite tutti gli scenari e compilate una tabella: endpoint, header di autenticazione, posizione delle istruzioni, percorso del testo nella risposta,
+  nomi dei campi `usage`, **chi conserva lo stato**. Quante differenze sono necessarie e quante arbitrarie?
+}

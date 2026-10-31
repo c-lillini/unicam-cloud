@@ -1,0 +1,51 @@
+meta {
+  name: 02 - Multi-turno (turno 2, stato sul server)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{openaiBaseUrl}}/responses
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{openaiApiKey}}
+}
+
+body:json {
+  {
+    "model": "{{openaiModel}}",
+    "instructions": "Sei un assistente didattico del corso di Cloud Computing. Rispondi in italiano e in modo conciso.",
+    "previous_response_id": "{{openaiResponseId}}",
+    "input": "E in che cosa si differenzia da quello che fanno i container?"
+  }
+}
+
+assert {
+  res.status: eq 200
+}
+
+docs {
+  # Multi-turno, turno 2 - stato sul server
+  
+  Nel body c'e' **solo la nuova domanda** piu' `previous_response_id`. Non rispediamo ne' la prima domanda ne' la prima risposta:
+  e' il server che ricostruisce il contesto a partire dall'id.
+  
+  Confrontatela con il turno 2 di Chat Completions (cartella B), dove invece bisogna rimandare tutta la cronologia.
+  
+  ## Da notare
+  
+  - Il server ha **stato**: sta conservando la conversazione per noi. Il client e' piu' semplice, ma la conversazione vive sul cloud del provider.
+  - `instructions` non viene ereditato da `previous_response_id`: va ripetuto a ogni richiesta se lo si vuole.
+  - **Il costo non sparisce**: guardate `usage.input_tokens`. Il contesto precedente viene comunque processato e fatturato come input.
+    Cambia chi tiene la cronologia, non quanto costa elaborarla.
+  - Con `"store": false` il server non conserva nulla e `previous_response_id` non e' piu' utilizzabile: si torna al modello stateless.
+  
+  ## Spunti per la discussione
+  
+  Quali sono i pro e i contro di delegare lo stato al provider? Pensate a portabilita' (lock-in), privacy e retention dei dati,
+  GDPR, scalabilita' lato client, e a cosa succede se la risposta salvata scade.
+}

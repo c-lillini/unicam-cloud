@@ -1,0 +1,46 @@
+meta {
+  name: 01 - Multi-turno (turno 1)
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{openaiBaseUrl}}/responses
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{openaiApiKey}}
+}
+
+body:json {
+  {
+    "model": "{{openaiModel}}",
+    "instructions": "Sei un assistente didattico del corso di Cloud Computing. Rispondi in italiano e in modo conciso.",
+    "input": "Che cos'è la virtualizzazione hardware?"
+  }
+}
+
+assert {
+  res.status: eq 200
+}
+
+script:post-response {
+  bru.setVar("openaiResponseId", res.body.id);
+  console.log("id salvato:", res.body.id);
+  console.log("Token input/output:", res.body.usage.input_tokens, res.body.usage.output_tokens);
+}
+
+docs {
+  # Multi-turno, turno 1 - Responses
+  
+  Primo messaggio. Lo script di post-risposta salva in una variabile l'`id` della risposta (`resp_...`).
+  
+  Attenzione: **qui non salviamo il testo, salviamo solo un identificativo**. Per default `store` e' `true`:
+  OpenAI conserva la risposta lato server (con una retention limitata), quindi ci basta darle
+  l'id per riprendere il filo. E' una differenza architetturale importante rispetto a Chat Completions e a Messages.
+  
+  Lanciate la richiesta e passate al turno 2.
+}

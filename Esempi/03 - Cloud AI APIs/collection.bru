@@ -1,0 +1,25 @@
+auth {
+  mode: none
+}
+
+docs {
+  # Cloud AI APIs - Corso di Cloud Computing (UniCam)
+
+  Collection didattica per osservare "sul filo" come funzionano le API dei due
+  principali provider di modelli linguistici erogati come servizio cloud:
+
+  - **OpenAI (ChatGPT)** - `https://api.openai.com/v1`, con due API: **Responses** (quella attuale) e **Chat Completions** (quella storica)
+  - **Anthropic (Claude)** - `https://api.anthropic.com/v1`, con l'API **Messages**
+
+  ## Obiettivi di apprendimento
+
+  1. Riconoscere i pattern di autenticazione di un servizio cloud (Bearer token vs. API key custom).
+  2. Capire chi conserva lo **stato** di una conversazione: il client (Chat Completions, Messages) oppure il server (Responses).
+  3. Leggere il contratto di risposta (schema JSON) e il blocco `usage`, da cui dipende il costo.
+  4. Confrontare implementazioni diverse dello stesso servizio e distinguere cio' che e' essenziale da cio' che e' scelta di design.
+
+  ## Prima di iniziare
+
+  Copia `.env.example` in `.env` e inserisci le tue API key (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`).
+  Il file `.env` e' escluso da Git: le chiavi non finiscono mai nella collection.
+}

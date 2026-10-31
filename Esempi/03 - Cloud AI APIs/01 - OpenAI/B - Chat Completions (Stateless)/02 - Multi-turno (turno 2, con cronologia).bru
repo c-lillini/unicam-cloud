@@ -1,0 +1,56 @@
+meta {
+  name: 02 - Multi-turno (turno 2, con cronologia)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{openaiBaseUrl}}/chat/completions
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{openaiApiKey}}
+}
+
+body:json {
+  {
+    "model": "{{openaiModel}}",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Sei un assistente didattico del corso di Cloud Computing. Rispondi in italiano e in modo conciso."
+      },
+      {
+        "role": "user",
+        "content": "Che cos'è la virtualizzazione hardware?"
+      },
+      {
+        "role": "assistant",
+        "content": "{{openaiRisposta}}"
+      },
+      {
+        "role": "user",
+        "content": "E in che cosa si differenzia da quello che fanno i container?"
+      }
+    ]
+  }
+}
+
+assert {
+  res.status: eq 200
+}
+
+docs {
+  # Multi-turno, turno 2 - Chat Completions
+  
+  La domanda di follow-up e' anaforica: funziona solo se rispediamo **l'intera conversazione** (system, user, assistant, user).
+  Il ruolo `assistant` serve a dichiarare al modello "questo l'hai detto tu": il modello non lo ricorda, glielo raccontiamo noi.
+  
+  Confrontate `usage.prompt_tokens` con quello del turno 1: e' cresciuto. In una conversazione lunga il costo di ogni turno cresce
+  con la lunghezza della cronologia; le applicazioni reali usano finestre scorrevoli, riassunti o RAG per contenerlo.
+  
+  Confrontate questa richiesta con il turno 2 di Responses (cartella A): stesso risultato, responsabilita' dello stato opposta.
+}

@@ -1,0 +1,44 @@
+meta {
+  name: 03 - Controprova (turno 2 senza cronologia)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{anthropicBaseUrl}}/messages
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  x-api-key: {{anthropicApiKey}}
+  anthropic-version: {{anthropicVersion}}
+}
+
+body:json {
+  {
+    "model": "{{anthropicModel}}",
+    "max_tokens": 1024,
+    "system": "Sei un assistente didattico del corso di Cloud Computing. Rispondi in italiano e in modo conciso.",
+    "messages": [
+      {
+        "role": "user",
+        "content": "E in che cosa si differenzia da quello che fanno i container?"
+      }
+    ]
+  }
+}
+
+assert {
+  res.status: eq 200
+}
+
+docs {
+  # Controprova - senza cronologia
+  
+  Stessa domanda senza messaggi precedenti: il modello non puo' sapere a cosa ci si riferisca.
+  
+  Qui la responsabilita' dello stato e' interamente del client. Messages non offre un equivalente di `previous_response_id`: scelta architetturale
+  che mantiene il servizio stateless e quindi replicabile orizzontalmente senza sticky session ne' stato condiviso.
+}

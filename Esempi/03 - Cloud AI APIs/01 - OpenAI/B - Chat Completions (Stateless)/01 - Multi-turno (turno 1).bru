@@ -1,0 +1,52 @@
+meta {
+  name: 01 - Multi-turno (turno 1)
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{openaiBaseUrl}}/chat/completions
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{openaiApiKey}}
+}
+
+body:json {
+  {
+    "model": "{{openaiModel}}",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Sei un assistente didattico del corso di Cloud Computing. Rispondi in italiano e in modo conciso."
+      },
+      {
+        "role": "user",
+        "content": "Che cos'è la virtualizzazione hardware?"
+      }
+    ]
+  }
+}
+
+assert {
+  res.status: eq 200
+}
+
+script:post-response {
+  const testo = res.body.choices[0].message.content;
+  // JSON.stringify fa l'escape di virgolette e a capo; slice(1, -1) toglie gli apici esterni
+  bru.setVar("openaiRisposta", JSON.stringify(testo).slice(1, -1));
+  console.log("Token usati:", res.body.usage.total_tokens);
+}
+
+docs {
+  # Multi-turno, turno 1 - Chat Completions
+  
+  Qui il server non conserva nulla. Lo script salva il **testo** della risposta in una variabile: la memoria della conversazione la teniamo noi, lato client.
+  
+  Un servizio stateless si scala orizzontalmente con facilita': qualsiasi istanza dietro il load balancer puo' servire qualsiasi richiesta.
+  Il prezzo lo paga il client, che deve rispedire il contesto a ogni chiamata.
+}
