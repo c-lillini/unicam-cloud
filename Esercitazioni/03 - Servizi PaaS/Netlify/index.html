@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Applicazioni Web, Mobile e Cloud &ndash; Modulo Cloud Computing</title>
-    <meta name="description" content="Sito di presentazione del modulo Cloud Computing del corso Applicazioni Web, Mobile e Cloud dell'Universit&agrave; di Camerino.">
+    <title>Applicazioni Web, Mobile e Cloud &ndash; Modulo Cloud Computing &ndash; A.A. 2026/2027</title>
+    <meta name="description" content="Sito di presentazione del modulo Cloud Computing del corso Applicazioni Web, Mobile e Cloud dell'Universit&agrave; di Camerino, anno accademico 2026/2027.">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
@@ -16,6 +16,7 @@
             <h1>Modulo Cloud Computing</h1>
             <p class="hero__subtitle">Dalla progettazione al deployment: competenze cloud native per costruire soluzioni moderne e scalabili.</p>
             <div class="hero__meta">
+                <span class="hero__tag">A.A. 2026/2027</span>
                 <span class="hero__tag">12 CFU (corso)</span>
                 <span class="hero__tag">6 CFU (modulo)</span>
                 <span class="hero__tag">Marted&igrave; &middot; 9:00 &ndash; 13:00</span>
@@ -49,6 +50,7 @@
                     <ul class="info-list">
                         <li><span>Corso</span><strong>Applicazioni Web, Mobile e Cloud</strong></li>
                         <li><span>Modulo</span><strong>Cloud Computing</strong></li>
+                        <li><span>Anno accademico</span><strong>2026/2027</strong></li>
                         <li><span>CFU</span><strong>Corso 12 &middot; Modulo 6</strong></li>
                         <li><span>Orario lezioni</span><strong>Marted&igrave; 9:00 &ndash; 13:00</strong></li>
                         <li><span>Sito materiale</span><strong>Risorse condivise in aula e repository dedicati</strong></li>
@@ -112,7 +114,7 @@
                     <h2>Modalit&agrave; di esame</h2>
                     <p>L'esame si compone di due parti complementari pensate per misurare competenze pratiche e teoriche.</p>
                     <ul class="icon-list">
-                        <li><strong>Progetto</strong>: sviluppo di una soluzione cloud native completa.</li>
+                        <li><strong>Progetto</strong>: sviluppo e deploy in cloud di una soluzione cloud native completa.</li>
                         <li><strong>Prova orale</strong>: discussione tecnica e domande sugli argomenti del corso.</li>
                     </ul>
                 </div>
@@ -131,17 +133,24 @@
             <div class="section__inner two-columns">
                 <div>
                     <h2>Progetto</h2>
-                    <p>Gli studenti possono lavorare individualmente o in gruppo (max 4 persone) per deliverare un'applicazione completa:</p>
+                    <p>Gli studenti possono lavorare individualmente o in gruppo (max 4 persone) per realizzare un'applicazione completa:</p>
                     <ul class="icon-list">
                         <li>Frontend</li>
                         <li>Backend</li>
                         <li>Database</li>
                     </ul>
-                    <p>Tema e stack sono liberi. Il deployment pu&ograve; avvenire su provider cloud o in locale.</p>
+                    <p>Tema e stack sono liberi. Il deployment su un provider cloud &egrave; <strong>obbligatorio</strong>: l'applicazione deve essere raggiungibile pubblicamente tramite URL.</p>
                 </div>
-                <div class="card">
-                    <h3 class="card__title">Pitch finale</h3>
-                    <p>Ogni squadra presenta il proprio lavoro con un pitch di 10 minuti: consigliati slide e demo live per mostrare la soluzione end-to-end.</p>
+                <div class="card-stack">
+                    <div class="card card--notice">
+                        <p class="card__badge">Novit&agrave; A.A. 2026/2027</p>
+                        <h3 class="card__title">Deploy obbligatorio</h3>
+                        <p>Un progetto eseguibile solo in locale non &egrave; sufficiente per sostenere l'esame. Scegli liberamente il provider (IaaS, PaaS o container) e, se vuoi, sfrutta i piani gratuiti: l'importante &egrave; che l'applicazione sia online e funzionante dalla consegna fino al giorno dell'esame.</p>
+                    </div>
+                    <div class="card">
+                        <h3 class="card__title">Pitch finale</h3>
+                        <p>Ogni squadra presenta il proprio lavoro con un pitch di 10 minuti: consigliate slide e una demo live sull'ambiente di produzione per mostrare la soluzione end-to-end.</p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -157,12 +166,15 @@
                         <li>Diagrammi architetturali e di deployment.</li>
                         <li>File YAML di configurazione.</li>
                         <li>Pipeline CI/CD o script di build/test.</li>
-                        <li>Link al deployment pubblico oppure istruzioni per l'avvio locale.</li>
+                        <li>Link al deployment pubblico, funzionante e raggiungibile (obbligatorio).</li>
+                        <li>Descrizione della piattaforma cloud scelta e della procedura di deploy.</li>
+                        <li>Istruzioni per l'avvio in locale, utili allo sviluppo e alla verifica.</li>
                     </ul>
                 </div>
                 <div class="card">
                     <h3 class="card__title">Best practice</h3>
-                    <p>Il README deve permettere un build from scratch senza supporto del team: cura chiarezza, referenze e automazioni.</p>
+                    <p>Il README deve permettere un build e un deploy from scratch senza supporto del team: cura chiarezza, referenze e automazioni.</p>
+                    <p>Se usi un piano gratuito che sospende il servizio per inattivit&agrave;, verifica che l'applicazione si riattivi correttamente prima dell'esame.</p>
                 </div>
             </div>
         </section>
