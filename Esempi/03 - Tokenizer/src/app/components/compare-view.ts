@@ -56,10 +56,8 @@ export class CompareView {
   });
 
   constructor() {
-    // I vocabolari OpenAI sono inclusi nell'app: li carichiamo subito.
-    for (const t of this.tokenizers.catalog) {
-      if (t.source.kind === 'tiktoken') void this.tokenizers.load(t.id);
-    }
+    // Il confronto usa tutti i tokenizer: li carichiamo subito.
+    for (const t of this.tokenizers.catalog) void this.tokenizers.load(t.id);
   }
 
   protected edit(code: string, event: Event): void {

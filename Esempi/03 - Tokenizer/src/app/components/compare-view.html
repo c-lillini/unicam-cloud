@@ -17,8 +17,10 @@
           <th scope="col" class="text-col">Frase</th>
           @for (t of tokenizers.catalog; track t.id) {
             <th scope="col" class="num">
-              <div>{{ t.name }}</div>
-              <div class="muted small">{{ t.vendor }}</div>
+              <div>
+                <code>{{ t.encoding }}</code>
+              </div>
+              <div class="muted small">{{ t.family }}</div>
               @if (tokenizers.status(t.id) !== 'ready') {
                 <app-tokenizer-status [id]="t.id" />
               }
@@ -70,7 +72,10 @@
 <section class="card">
   @let d = detail();
   <div class="card-head">
-    <h2>{{ d.sample.label }} · {{ d.def.name }}</h2>
+    <h2>
+      {{ d.sample.label }} · tokenizer <code>{{ d.def.encoding }}</code>
+      <span class="muted small">({{ d.def.family }})</span>
+    </h2>
     @if (d.pieces) {
       <span class="muted">{{ d.pieces.length }} token</span>
     }
@@ -93,7 +98,7 @@
   <p>
     Più token significano meno testo nella <em>context window</em> del modello, risposte più lente
     e, con le API cloud che fatturano a token, un costo maggiore. I vocabolari più recenti e più
-    grandi (GPT-4o rispetto a GPT-4, Gemma con 262 mila token) riducono il divario: confronta le
-    colonne.
+    grandi riducono il divario: confronta <code>cl100k_base</code> (GPT-4, 100 mila token) con
+    <code>o200k_base</code> (GPT-4o, 200 mila token).
   </p>
 </section>

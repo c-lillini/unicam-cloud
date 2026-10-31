@@ -17,7 +17,6 @@
     "@angular/forms": "^21.2.0",
     "@angular/platform-browser": "^21.2.0",
     "@angular/router": "^21.2.0",
-    "@huggingface/tokenizers": "^0.2.0",
     "js-tiktoken": "^1.0.21",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
@@ -29,7 +28,6 @@
     "jsdom": "^28.0.0",
     "prettier": "^3.8.1",
     "typescript": "~5.9.2",
-    "vitest": "^4.0.8",
-    "wrangler": "^4.156.0"
+    "vitest": "^4.0.8"
   }
 }

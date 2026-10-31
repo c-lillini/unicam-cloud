@@ -18,63 +18,7 @@ export interface TokenPiece {
   newline: boolean;
 }
 
-const utf8 = new TextEncoder();
 const strictDecoder = new TextDecoder('utf-8', { fatal: true });
-
-// --- Byte-level BPE (GPT-2, Llama 3) -----------------------------------------
-
-/**
- * I tokenizer "byte-level" (GPT-2, Llama 3...) rappresentano ogni byte con un carattere Unicode
- * stampabile: i byte "visibili" restano se stessi, gli altri (spazi, controlli, byte ≥ 0x7F) vengono
- * spostati a partire da U+0100. Per questo lo spazio diventa "Ġ" (U+0120) e l'a capo "Ċ" (U+010A).
- */
-function buildByteLevelDecoder(): Map<string, number> {
-  const visible: number[] = [];
-  const range = (from: number, to: number) => {
-    for (let b = from; b <= to; b++) visible.push(b);
-  };
-  range(0x21, 0x7e); // da '!' a '~'
-  range(0xa1, 0xac); // da '¡' a '¬'
-  range(0xae, 0xff); // da '®' a 'ÿ'
-
-  const map = new Map<string, number>();
-  let shifted = 0;
-  for (let b = 0; b < 256; b++) {
-    const ch = visible.includes(b) ? b : 256 + shifted++;
-    map.set(String.fromCodePoint(ch), b);
-  }
-  return map;
-}
-
-const byteLevelDecoder = buildByteLevelDecoder();
-
-/** Converte un token byte-level (es. "Ġmondo") nei byte che rappresenta. */
-export function byteLevelTokenToBytes(token: string): Uint8Array {
-  const out: number[] = [];
-  for (const ch of token) {
-    const b = byteLevelDecoder.get(ch);
-    if (b === undefined) {
-      out.push(...utf8.encode(ch)); // token aggiunto a mano (es. token speciali): testo normale
-    } else {
-      out.push(b);
-    }
-  }
-  return Uint8Array.from(out);
-}
-
-// --- SentencePiece con byte fallback (Gemma, Gemini) ------------------------
-
-const BYTE_FALLBACK = /^<0x([0-9A-Fa-f]{2})>$/;
-
-/**
- * I tokenizer SentencePiece (Gemma...) scrivono lo spazio come "▁" (U+2581) e, per i caratteri che
- * non hanno nel vocabolario, ripiegano su token che valgono un singolo byte, scritti "<0xE4>".
- */
-export function sentencePieceTokenToBytes(token: string): Uint8Array {
-  const m = BYTE_FALLBACK.exec(token);
-  if (m) return Uint8Array.of(parseInt(m[1], 16));
-  return utf8.encode(token.replaceAll('▁', ' '));
-}
 
 // --- Visualizzazione ---------------------------------------------------------
 

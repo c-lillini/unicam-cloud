@@ -6,21 +6,14 @@ import { TokenizerService } from '../tokenizers/tokenizer.service';
   selector: 'app-tokenizer-status',
   template: `
     @switch (status()) {
-      @case ('idle') {
-        <button type="button" class="small" (click)="tokenizers.load(id())">
-          Scarica{{ sizeMb() ? ' (≈' + sizeMb() + ' MB)' : '' }}
-        </button>
-      }
-      @case ('loading') {
-        <span class="status loading small">
-          {{ sizeMb() ? 'Scaricamento da Hugging Face (≈' + sizeMb() + ' MB)…' : 'Caricamento…' }}
-        </span>
-      }
       @case ('error') {
         <span class="status error small">
-          {{ tokenizers.error(id()) }}
+          Impossibile caricare il tokenizer: {{ tokenizers.error(id()) }}
           <button type="button" class="small" (click)="tokenizers.load(id())">Riprova</button>
         </span>
+      }
+      @default {
+        <span class="status loading small">Caricamento del vocabolario…</span>
       }
     }
   `,
@@ -31,8 +24,4 @@ export class TokenizerStatus {
   readonly id = input.required<string>();
 
   protected readonly status = computed(() => this.tokenizers.status(this.id()));
-  protected readonly sizeMb = computed(() => {
-    const src = this.tokenizers.def(this.id()).source;
-    return src.kind === 'huggingface' ? src.sizeMb : 0;
-  });
 }

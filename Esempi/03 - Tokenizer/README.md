@@ -1,8 +1,8 @@
 # Tokenizer: come un LLM legge il testo
 
 Simulatore didattico (Angular 21) che mostra come un modello linguistico divide il testo in **token**,
-usando i **tokenizer reali** di GPT, Llama e Gemma, e quanto il numero di token cambia da una lingua
-all'altra.
+usando i **tokenizer reali** di OpenAI (quelli di ChatGPT e delle API GPT), e quanto il numero di
+token cambia da una lingua all'altra.
 
 ## Avvio
 
@@ -17,19 +17,14 @@ Altri comandi: `npm test` (unit test con Vitest), `npm run build` (build di prod
 
 ## I tokenizer
 
-| Tokenizer | Modelli | Vocabolario | Da dove arriva |
-| --- | --- | --- | --- |
-| `o200k_base` (OpenAI) | GPT-4o, GPT-4.1, GPT-5, o1, o3, o4-mini | 200.019 token | incluso nell'app ([js-tiktoken](https://github.com/dqbd/tiktoken)) |
-| `cl100k_base` (OpenAI) | GPT-4, GPT-4 Turbo, GPT-3.5 Turbo | 100.277 token | incluso nell'app (js-tiktoken) |
-| Llama 3 (Meta) | Llama 3, 3.1, 3.2, 3.3 | 128.256 token | scaricato da Hugging Face al primo uso (≈ 9 MB) |
-| Gemma 3 (Google) | Gemma 3, stesso vocabolario di Gemini 2.0 | 262.144 token | scaricato da Hugging Face al primo uso (≈ 20 MB) |
+| Tokenizer | Modelli | Vocabolario |
+| --- | --- | --- |
+| `o200k_base` | GPT-4o, GPT-4.1, GPT-5, o1, o3, o4-mini | 200.019 token |
+| `cl100k_base` | GPT-4, GPT-4 Turbo, GPT-3.5 Turbo | 100.277 token |
 
-I vocabolari di Llama e Gemma vengono letti con
-[@huggingface/tokenizers](https://github.com/huggingface/tokenizers.js) dai repository pubblici
-`Xenova/llama3-tokenizer-new` e `onnx-community/gemma-3-270m-it-ONNX`, fissati a una revisione precisa,
-e poi salvati nella Cache Storage del browser: dopo il primo download funzionano anche senza rete.
-Se Hugging Face non è raggiungibile l'app lo segnala, offre un pulsante "Riprova" e continua a
-funzionare con i tokenizer OpenAI.
+Entrambi sono inclusi nell'app tramite [js-tiktoken](https://github.com/dqbd/tiktoken) e vengono caricati
+solo quando servono: l'app funziona interamente nel browser, senza chiamate esterne. Il tokenizer in uso
+è indicato sopra la scelta, accanto al conteggio dei token e nelle intestazioni della tabella di confronto.
 
 **Claude non c'è** perché il tokenizer di Claude 3 e successivi non è pubblico: il conteggio esatto si
 ottiene solo dall'API `count_tokens`, che richiede una chiave e quindi un backend. L'app lo spiega in un
@@ -63,8 +58,8 @@ alcune lingue richiedono più token.
 ```
 src/app/
 ├── tokenizers/
-│   ├── catalog.ts              # elenco dei tokenizer: modelli, vocabolario, sorgente
-│   ├── tokenizer.service.ts    # caricamento (con cache) e codifica del testo
+│   ├── catalog.ts              # elenco dei tokenizer: nome, modelli, vocabolario
+│   ├── tokenizer.service.ts    # caricamento e codifica del testo
 │   ├── token-bytes.ts          # byte di ogni token, frammenti di carattere, spazi visibili
 │   ├── text-stats.ts           # caratteri, parole, byte UTF-8
 │   ├── samples.ts              # testo di esempio e frasi nelle varie lingue
@@ -73,6 +68,6 @@ src/app/
 │   ├── tokenize-view.*         # vista "Tokenizza"
 │   ├── compare-view.*          # vista "Confronta lingue"
 │   ├── token-view.*            # blocchetti colorati dei token
-│   └── tokenizer-status.ts     # stato di caricamento / errore / "Riprova"
+│   └── tokenizer-status.ts     # stato di caricamento / errore
 └── app.*                       # intestazione e schede
 ```

@@ -449,3 +449,47 @@ app-compare-view {
 .cell.heat-3 {
   background: var(--heat-3);
 }
+
+/* --- Scelta del tokenizer ------------------------------------------------- */
+
+code.encoding {
+  font-size: 0.95em;
+  color: var(--accent);
+}
+
+.tokenizer-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 0.6rem;
+  margin-bottom: 0.9rem;
+}
+
+.tokenizer-option {
+  display: grid;
+  gap: 0.15rem;
+  text-align: left;
+  padding: 0.6rem 0.85rem;
+  border-width: 2px;
+  border-radius: 10px;
+}
+
+.tokenizer-option code {
+  font-size: 1rem;
+  font-weight: 700;
+  background: none;
+  padding: 0;
+}
+
+.tokenizer-option span {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.tokenizer-option.active {
+  border-color: var(--accent);
+  background: var(--surface-2);
+}
+
+.tokenizer-option.active code {
+  color: var(--accent);
+}

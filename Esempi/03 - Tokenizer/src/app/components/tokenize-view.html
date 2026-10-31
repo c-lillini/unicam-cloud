@@ -1,28 +1,25 @@
 <section class="card">
   <div class="card-head">
-    <h2>Tokenizer</h2>
-    <div class="chips" role="radiogroup" aria-label="Tokenizer">
-      @for (t of tokenizers.catalog; track t.id) {
-        <button
-          type="button"
-          class="chip"
-          role="radio"
-          [attr.aria-checked]="t.id === selected()"
-          [class.active]="t.id === selected()"
-          (click)="select(t.id)"
-        >
-          {{ t.name }}
-        </button>
-      }
-    </div>
+    <h2>
+      Tokenizer in uso: <code class="encoding">{{ def().encoding }}</code>
+    </h2>
   </div>
-  <p class="hint">
-    <strong>{{ def().vendor }}</strong> · usato da {{ def().models }} · vocabolario di
-    {{ def().vocabSize | number }} token
-    @if (def().source.kind === 'huggingface') {
-      · scaricato da Hugging Face al primo uso
+  <div class="tokenizer-picker" role="radiogroup" aria-label="Scegli il tokenizer">
+    @for (t of tokenizers.catalog; track t.id) {
+      <button
+        type="button"
+        class="tokenizer-option"
+        role="radio"
+        [attr.aria-checked]="t.id === selected()"
+        [class.active]="t.id === selected()"
+        (click)="select(t.id)"
+      >
+        <code>{{ t.encoding }}</code>
+        <span>{{ t.vendor }} · {{ t.models }}</span>
+        <span class="small">vocabolario di {{ t.vocabSize | number }} token</span>
+      </button>
     }
-  </p>
+  </div>
 
   <aside class="note">
     <strong>Perché non c’è Claude?</strong>
@@ -61,7 +58,8 @@
       <span>Byte UTF-8</span><output>{{ stats().bytes | number }}</output>
     </div>
     <div class="stat main">
-      <span>Token</span><output>{{ pieces() ? (pieces()!.length | number) : '…' }}</output>
+      <span>Token ({{ def().encoding }})</span
+      ><output>{{ pieces() ? (pieces()!.length | number) : '…' }}</output>
     </div>
     <div class="stat">
       <span>Token per parola</span>
@@ -72,7 +70,9 @@
 
 <section class="card">
   <div class="card-head">
-    <h2>Token</h2>
+    <h2>
+      Token prodotti da <code class="encoding">{{ def().encoding }}</code>
+    </h2>
     <label class="switch small">
       <input type="checkbox" [checked]="showIds()" (change)="showIds.set(!showIds())" />
       Mostra gli ID (ciò che il modello riceve davvero)

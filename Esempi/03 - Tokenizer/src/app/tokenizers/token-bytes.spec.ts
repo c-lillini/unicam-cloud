@@ -1,35 +1,6 @@
-import {
-  byteLevelTokenToBytes,
-  hexBytes,
-  sentencePieceTokenToBytes,
-  showWhitespace,
-  toPieces,
-} from './token-bytes';
+import { showWhitespace, toPieces } from './token-bytes';
 
 const bytes = (s: string) => new TextEncoder().encode(s);
-const text = (b: Uint8Array) => new TextDecoder().decode(b);
-
-describe('byteLevelTokenToBytes (GPT-2, Llama 3)', () => {
-  it('converte "Ġ" in spazio e "Ċ" in a capo', () => {
-    expect(text(byteLevelTokenToBytes('Ġmondo'))).toBe(' mondo');
-    expect(text(byteLevelTokenToBytes('ĊĊ'))).toBe('\n\n');
-  });
-
-  it('ricostruisce i byte UTF-8 di caratteri non ASCII', () => {
-    expect(text(byteLevelTokenToBytes('ĠÃ¨'))).toBe(' è');
-    expect(hexBytes(byteLevelTokenToBytes('ĠðŁ'))).toBe('20 F0 9F');
-  });
-});
-
-describe('sentencePieceTokenToBytes (Gemma)', () => {
-  it('converte "▁" in spazio', () => {
-    expect(text(sentencePieceTokenToBytes('▁▁ciao'))).toBe('  ciao');
-  });
-
-  it('gestisce i token di byte fallback', () => {
-    expect(hexBytes(sentencePieceTokenToBytes('<0xE4>'))).toBe('E4');
-  });
-});
 
 describe('showWhitespace', () => {
   it('rende visibili spazi, tabulazioni e a capo', () => {

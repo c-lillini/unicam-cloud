@@ -10,7 +10,7 @@ Questo repository contiene il materiale del corso "Applicazioni Web, Mobile e Cl
 - 💡 `Esempi/` – applicazioni Angular che simulano visivamente i concetti presentati a lezione (avvio con `npm install` e `npm start`).
   - ⚖️ `02 - Load Balancer/` – simulatore animato di un load balancer che distribuisce le richieste tra i server di backend con diversi algoritmi (Round Robin, Weighted Round Robin, Least Connections, Least Time, IP Hash).
   - 📈 `02 - Oscillazioni/` – simulatore di autoscaling che mostra il fenomeno del _flapping_ e come evitarlo tramite soglie di isteresi e cool-down, confrontando due autoscaler sullo stesso carico.
-  - 🔤 `03 - Tokenizer/` – mostra come un LLM divide il testo in token con i tokenizer reali di GPT (OpenAI), Llama 3 e Gemma 3, e confronta quanti token servono per la stessa frase in lingue diverse.
+  - 🔤 `03 - Tokenizer/` – mostra come un LLM divide il testo in token con i tokenizer reali di OpenAI (`o200k_base` di GPT-4o/GPT-5 e `cl100k_base` di GPT-4), e confronta quanti token servono per la stessa frase in lingue diverse.
 - 📁 `Esercitazioni/` – esercitazioni del corso organizzate per capitolo, con materiali e soluzioni a supporto delle lezioni.
   - 🏗️ `02 - Infrastruttura IaaS/` – laboratori dedicati alla costruzione di ambienti su Infrastructure as a Service.
     - 🖥️ `AWS EC2/` – guida passo-passo per distribuire WordPress e MariaDB su due istanze EC2 (app pubblica + DB privato) in configurazione Single-AZ.
