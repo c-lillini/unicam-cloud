@@ -14,7 +14,7 @@ services:
       - wp_network
 
   wordpress:
-    image: wordpress:6.7-apache
+    image: wordpress:6-apache
     container_name: wordpress-app
     depends_on:
       - db
