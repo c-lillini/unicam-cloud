@@ -8,7 +8,7 @@ Applicazione Express che espone endpoint REST per leggere ed inserire articoli i
    ```bash
    cp .env.example .env
    ```
-2. Impostare in `.env` la stringa di connessione `MONGODB_URI` e, se necessario, nome database (`MONGODB_DB`) e collection (`MONGODB_COLLECTION`).
+2. Uso standalone (senza Docker Compose): impostare in `.env` la stringa di connessione `MONGODB_URI` e, se necessario, `MONGODB_DB`, `MONGODB_COLLECTION`, `MONGODB_USERNAME` e `MONGODB_PASSWORD`. Con Docker Compose, `MONGODB_URI` e' gia' impostata da `docker-compose.yaml` e basta il `.env` nella cartella superiore.
 
 ## Installazione
 

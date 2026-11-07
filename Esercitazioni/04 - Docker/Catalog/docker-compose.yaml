@@ -16,11 +16,12 @@ services:
       - "3000:3000"
     restart: unless-stopped
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
 
   mongo:
     container_name: catalog-mongo
-    image: mongo:7
+    image: mongo:8
     restart: unless-stopped
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USERNAME}
@@ -28,6 +29,12 @@ services:
       MONGO_INITDB_DATABASE: ${MONGODB_DB}
     volumes:
       - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
 volumes:
   mongo_data:

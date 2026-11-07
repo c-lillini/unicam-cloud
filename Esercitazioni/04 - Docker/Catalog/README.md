@@ -18,15 +18,15 @@ Per fermare lo stack:
 ```bash
 docker compose down
 ```
-Il volume `mongo_data` conserva i dati; aggiungi `-v` se vuoi rimuoverlo.
+Il volume `mongo_data` conserva i dati; per rimuoverlo (e ripartire da zero) usa `docker compose down -v`.
 
 ### Variabili d'ambiente principali
-| Variabile | Descrizione |
-|-----------|-------------|
+| Variabile | Descrizione | Default (`.env.example`) |
+|-----------|-------------|---------|
 | `MONGODB_DB` | Nome del database | `catalog` |
-| `MONGODB_COLLECTION` | Collezione utilizzata per gli item |
-| `MONGODB_USERNAME` | Username MongoDB |
-| `MONGODB_PASSWORD` | Password MongoDB |
+| `MONGODB_COLLECTION` | Collezione utilizzata per gli item | `items` |
+| `MONGODB_USERNAME` | Username MongoDB | `admin` |
+| `MONGODB_PASSWORD` | Password MongoDB | `secret` |
 
 ### Endpoint principali
 - `GET /items` -> restituisce l'elenco degli item (campi `code`, `description`).
@@ -37,9 +37,3 @@ Il volume `mongo_data` conserva i dati; aggiungi `-v` se vuoi rimuoverlo.
     "description": "Item description"
   }
   ```
-
-### Pulizia
-Per rimuovere immagini o volumi residui:
-```bash
-docker compose down -v
-```
